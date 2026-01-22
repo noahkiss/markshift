@@ -10,6 +10,9 @@ text-transform aims to be the universal translator for text content, making it e
 - Transform Confluence pages and Jira issues into portable documentation
 - Convert between rich text formats and Markdown
 - Process any webpage intelligently through a simple URL proxy
+- Transform clipboard content on-the-fly for seamless workflows
+
+**Design Philosophy**: Maximum accessibility through multiple entry and exit points - CLI, web service, clipboard, automation tools, and API integrations.
 
 ## Features (Planned)
 
@@ -26,7 +29,24 @@ text-transform markdown input.md -o output.html
 
 # Process with smart detection
 text-transform smart https://github.com/user/repo/issues/123
+
+# Process clipboard content (reads from clipboard, outputs markdown)
+text-transform clipboard
+
+# Process clipboard and copy result back to clipboard
+text-transform clipboard --copy
+
+# Process clipboard with specific processor
+text-transform clipboard --smart github
 ```
+
+### 📋 Clipboard & Integration Support
+- **Direct clipboard processing**: Read from and write to system clipboard
+- **Alfred/Raycast workflows**: Trigger conversions via hotkeys or keywords
+- **iOS Shortcuts**: Share sheet integration for mobile workflows
+- **Automation-friendly**: Designed for scripting and agent integration
+- **Watch mode**: Monitor clipboard for automatic conversions
+- **Format detection**: Automatically detect and process HTML, RTF, or URLs in clipboard
 
 ### 🌐 Web Service
 - Simple web interface for one-off conversions
@@ -70,6 +90,7 @@ text-transform/
 │   │   ├── github/
 │   │   ├── confluence/
 │   │   └── ...
+│   ├── clipboard/    # Clipboard handling (cross-platform)
 │   ├── fetcher/      # URL fetching and preprocessing
 │   └── registry/     # Converter registration and discovery
 ├── internal/
