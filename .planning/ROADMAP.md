@@ -75,15 +75,15 @@ Plans:
 **Depends on**: Phase 2, Phase 3
 **Requirements**: CLI-01, CLI-02, CLI-03, CLI-04, CLI-05, CLI-06
 **Success Criteria** (what must be TRUE):
-  1. User can run `text-transform --help` and see clear usage instructions
-  2. User can run subcommands for conversion (e.g., `text-transform html-to-md`)
+  1. User can run `markshift --help` and see clear usage instructions
+  2. User can run subcommands for conversion (e.g., `markshift html-to-md`)
   3. --quiet mode suppresses all non-essential output
   4. --verbose mode shows detailed processing information
   5. Exit code 0 on success, non-zero with descriptive message on error
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 04-01: CLI structure with commander.js
+- [ ] 04-01-PLAN.md - CLI framework with Commander.js, subcommands, and verbose/quiet modes
 
 ### Phase 5: Standard I/O
 **Goal**: Enable pipeline usage with stdin/stdout and format auto-detection
