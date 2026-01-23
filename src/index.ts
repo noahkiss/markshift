@@ -12,5 +12,8 @@ export { isValidFormat } from './types/index.js';
 export type { Converter } from './converters/index.js';
 export { ConverterRegistry, registry } from './converters/index.js';
 
+// Converters
+export { HtmlToMarkdownConverter } from './converters/html-to-markdown/index.js';
+
 // Version
 export const VERSION = '0.0.1';
