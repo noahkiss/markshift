@@ -4,9 +4,13 @@
  * @packageDocumentation
  */
 
-// Types will be exported here after Task 2
-// export * from './types/index.js';
-// export * from './converters/index.js';
+// Core types
+export type { Format, FormatPair, ConvertOptions, ConvertResult } from './types/index.js';
+export { isValidFormat } from './types/index.js';
 
-// Placeholder export to make TypeScript happy
+// Converter interface and registry
+export type { Converter } from './converters/index.js';
+export { ConverterRegistry, registry } from './converters/index.js';
+
+// Version
 export const VERSION = '0.0.1';
