@@ -94,10 +94,10 @@ Plans:
   2. User can pipe Markdown via stdin and receive HTML on stdout
   3. Format is auto-detected when not explicitly specified
   4. --json flag outputs structured result with metadata
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 05-01: stdin/stdout handling and format detection
+- [ ] 05-01-PLAN.md — Format detection, convert command, and JSON output
 
 ### Phase 6: Clipboard Integration
 **Goal**: Read from and write to system clipboard for seamless workflow
@@ -164,7 +164,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9
 | 2. HTML to Markdown | 1/1 | Complete | 2026-01-23 |
 | 3. Markdown to HTML | 1/1 | Complete | 2026-01-23 |
 | 4. CLI Framework | 1/1 | Complete | 2026-01-23 |
-| 5. Standard I/O | 0/1 | Not started | - |
+| 5. Standard I/O | 0/1 | Planned | - |
 | 6. Clipboard Integration | 0/1 | Not started | - |
 | 7. RTF Pipeline | 0/1 | Not started | - |
 | 8. Content Extraction | 0/1 | Not started | - |
