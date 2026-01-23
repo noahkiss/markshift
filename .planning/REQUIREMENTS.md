@@ -14,7 +14,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **CONV-03**: Convert HTML links and images to Markdown
 - [x] **CONV-04**: Convert HTML code blocks to Markdown with language hints preserved
 - [x] **CONV-05**: Convert HTML tables to Markdown tables
-- [ ] **CONV-06**: Convert Markdown to HTML (bidirectional conversion)
+- [x] **CONV-06**: Convert Markdown to HTML (bidirectional conversion)
 - [ ] **CONV-07**: Auto-detect input format (HTML vs plain text vs RTF)
 - [ ] **CONV-08**: Convert RTF to Markdown via RTF->HTML->Markdown pipeline
 - [ ] **CONV-09**: Semantic table detection - convert div-based fake tables to markdown tables
@@ -31,12 +31,12 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### CLI
 
-- [ ] **CLI-01**: Command-line interface with clear subcommands
-- [ ] **CLI-02**: Help documentation (--help)
-- [ ] **CLI-03**: Quiet mode for clean piping (--quiet)
-- [ ] **CLI-04**: Verbose mode for debugging (--verbose)
-- [ ] **CLI-05**: Error messages with actionable guidance
-- [ ] **CLI-06**: Proper exit codes (0 for success, non-zero for errors)
+- [x] **CLI-01**: Command-line interface with clear subcommands
+- [x] **CLI-02**: Help documentation (--help)
+- [x] **CLI-03**: Quiet mode for clean piping (--quiet)
+- [x] **CLI-04**: Verbose mode for debugging (--verbose)
+- [x] **CLI-05**: Error messages with actionable guidance
+- [x] **CLI-06**: Proper exit codes (0 for success, non-zero for errors)
 - [ ] **CLI-07**: Content extraction flag to strip nav/ads from web pages (--extract-content)
 
 ### Platform Support
@@ -106,7 +106,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CONV-03 | Phase 2 | Complete |
 | CONV-04 | Phase 2 | Complete |
 | CONV-05 | Phase 2 | Complete |
-| CONV-06 | Phase 3 | Pending |
+| CONV-06 | Phase 3 | Complete |
 | CONV-07 | Phase 5 | Pending |
 | CONV-08 | Phase 7 | Pending |
 | CONV-09 | Phase 8 | Pending |
@@ -117,12 +117,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | IO-04 | Phase 6 | Pending |
 | IO-05 | Phase 6 | Pending |
 | IO-06 | Phase 5 | Pending |
-| CLI-01 | Phase 4 | Pending |
-| CLI-02 | Phase 4 | Pending |
-| CLI-03 | Phase 4 | Pending |
-| CLI-04 | Phase 4 | Pending |
-| CLI-05 | Phase 4 | Pending |
-| CLI-06 | Phase 4 | Pending |
+| CLI-01 | Phase 4 | Complete |
+| CLI-02 | Phase 4 | Complete |
+| CLI-03 | Phase 4 | Complete |
+| CLI-04 | Phase 4 | Complete |
+| CLI-05 | Phase 4 | Complete |
+| CLI-06 | Phase 4 | Complete |
 | CLI-07 | Phase 8 | Pending |
 | PLAT-01 | Phase 6 | Pending |
 | PLAT-02 | Phase 9 | Pending |
@@ -141,4 +141,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-01-22*
-*Last updated: 2026-01-23 after Phase 2 completion*
+*Last updated: 2026-01-23 after Phase 4 completion*
