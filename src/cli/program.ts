@@ -5,6 +5,8 @@
  */
 import { Command } from '@commander-js/extra-typings';
 import { VERSION } from '../index.js';
+import { htmlToMdCommand } from './commands/html-to-md.js';
+import { mdToHtmlCommand } from './commands/md-to-html.js';
 
 const program = new Command()
   .name('markshift')
@@ -12,6 +14,10 @@ const program = new Command()
   .version(VERSION, '-v, --version', 'display version number')
   .option('-q, --quiet', 'suppress all non-essential output')
   .option('-V, --verbose', 'show detailed processing information');
+
+// Add subcommands
+program.addCommand(htmlToMdCommand);
+program.addCommand(mdToHtmlCommand);
 
 /**
  * Run the CLI program
