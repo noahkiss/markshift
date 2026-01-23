@@ -14,6 +14,7 @@ export { ConverterRegistry, registry } from './converters/index.js';
 
 // Converters
 export { HtmlToMarkdownConverter } from './converters/html-to-markdown/index.js';
+export { MarkdownToHtmlConverter } from './converters/markdown-to-html/index.js';
 
 // Version
 export const VERSION = '0.0.1';
