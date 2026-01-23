@@ -65,10 +65,10 @@ Plans:
   1. User can convert Markdown to valid HTML
   2. Round-trip conversion (HTML->MD->HTML) preserves semantic meaning
   3. Output HTML is suitable for pasting into Teams or email
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 03-01: Markdown to HTML converter with marked
+- [ ] 03-01-PLAN.md - Markdown to HTML converter with marked and GFM support
 
 ### Phase 4: CLI Framework
 **Goal**: Provide a usable command-line interface with standard UX patterns
