@@ -52,10 +52,10 @@ Plans:
   6. Malformed HTML does not crash the converter (graceful handling)
   7. Whitespace in code blocks is preserved exactly
   8. UTF-8 characters including emoji and CJK render correctly
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 02-01: HTML to Markdown converter with turndown
+- [ ] 02-01-PLAN.md - HTML to Markdown converter with turndown, GFM support, and custom language extraction
 
 ### Phase 3: Markdown to HTML
 **Goal**: Convert Markdown back to HTML for platforms that need HTML input
