@@ -34,10 +34,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Converter registry can register and lookup converters by format pair
   4. Unit tests run and pass via npm test
   5. Project structure follows package organization from research (src/converters/, src/cli/, etc.)
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 01-01: TypeScript project setup and core interface definitions
+- [ ] 01-01-PLAN.md - TypeScript project setup and core interface definitions
 
 ### Phase 2: HTML to Markdown
 **Goal**: Convert HTML to clean, semantic Markdown
@@ -160,7 +160,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/1 | Not started | - |
+| 1. Foundation | 0/1 | Planned | - |
 | 2. HTML to Markdown | 0/1 | Not started | - |
 | 3. Markdown to HTML | 0/1 | Not started | - |
 | 4. CLI Framework | 0/1 | Not started | - |
