@@ -5,8 +5,12 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "bin": {
+    "markshift": "./dist/cli/index.js"
+  },
   "scripts": {
     "build": "tsc",
+    "cli": "tsx src/cli/index.ts",
     "dev": "tsx watch src/index.ts",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -23,6 +27,7 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "@commander-js/extra-typings": "^14.0.0",
     "@types/node": "^22.0.0",
     "@types/turndown": "^5.0.6",
     "tsx": "^4.21.0",
@@ -31,6 +36,7 @@
   },
   "dependencies": {
     "@truto/turndown-plugin-gfm": "^1.0.2",
+    "commander": "^14.0.2",
     "marked": "^17.0.1",
     "turndown": "^7.2.2"
   }
