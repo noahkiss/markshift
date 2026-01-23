@@ -9,16 +9,16 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Conversion - Core
 
-- [ ] **CONV-01**: Convert HTML to Markdown preserving semantic structure (headings, paragraphs, emphasis)
-- [ ] **CONV-02**: Convert HTML lists (ordered and unordered) to Markdown
-- [ ] **CONV-03**: Convert HTML links and images to Markdown
-- [ ] **CONV-04**: Convert HTML code blocks to Markdown with language hints preserved
-- [ ] **CONV-05**: Convert HTML tables to Markdown tables
+- [x] **CONV-01**: Convert HTML to Markdown preserving semantic structure (headings, paragraphs, emphasis)
+- [x] **CONV-02**: Convert HTML lists (ordered and unordered) to Markdown
+- [x] **CONV-03**: Convert HTML links and images to Markdown
+- [x] **CONV-04**: Convert HTML code blocks to Markdown with language hints preserved
+- [x] **CONV-05**: Convert HTML tables to Markdown tables
 - [ ] **CONV-06**: Convert Markdown to HTML (bidirectional conversion)
 - [ ] **CONV-07**: Auto-detect input format (HTML vs plain text vs RTF)
 - [ ] **CONV-08**: Convert RTF to Markdown via RTF->HTML->Markdown pipeline
 - [ ] **CONV-09**: Semantic table detection - convert div-based fake tables to markdown tables
-- [ ] **CONV-10**: Handle malformed HTML gracefully without crashes
+- [x] **CONV-10**: Handle malformed HTML gracefully without crashes
 
 ### Input/Output
 
@@ -48,9 +48,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Quality
 
-- [ ] **QUAL-01**: Preserve whitespace in code blocks and preformatted text
-- [ ] **QUAL-02**: Handle character encoding correctly (UTF-8, emoji, CJK characters)
-- [ ] **QUAL-03**: Decode HTML entities during conversion
+- [x] **QUAL-01**: Preserve whitespace in code blocks and preformatted text
+- [x] **QUAL-02**: Handle character encoding correctly (UTF-8, emoji, CJK characters)
+- [x] **QUAL-03**: Decode HTML entities during conversion
 - [x] **QUAL-04**: Fast execution (<100ms for typical documents)
 - [x] **QUAL-05**: Semantic meaning preserved over visual appearance
 
@@ -101,16 +101,16 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CONV-01 | Phase 2 | Pending |
-| CONV-02 | Phase 2 | Pending |
-| CONV-03 | Phase 2 | Pending |
-| CONV-04 | Phase 2 | Pending |
-| CONV-05 | Phase 2 | Pending |
+| CONV-01 | Phase 2 | Complete |
+| CONV-02 | Phase 2 | Complete |
+| CONV-03 | Phase 2 | Complete |
+| CONV-04 | Phase 2 | Complete |
+| CONV-05 | Phase 2 | Complete |
 | CONV-06 | Phase 3 | Pending |
 | CONV-07 | Phase 5 | Pending |
 | CONV-08 | Phase 7 | Pending |
 | CONV-09 | Phase 8 | Pending |
-| CONV-10 | Phase 2 | Pending |
+| CONV-10 | Phase 2 | Complete |
 | IO-01 | Phase 5 | Pending |
 | IO-02 | Phase 5 | Pending |
 | IO-03 | Phase 6 | Pending |
@@ -128,9 +128,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PLAT-02 | Phase 9 | Pending |
 | PLAT-03 | Phase 6 | Pending |
 | PLAT-04 | Phase 9 | Pending |
-| QUAL-01 | Phase 2 | Pending |
-| QUAL-02 | Phase 2 | Pending |
-| QUAL-03 | Phase 2 | Pending |
+| QUAL-01 | Phase 2 | Complete |
+| QUAL-02 | Phase 2 | Complete |
+| QUAL-03 | Phase 2 | Complete |
 | QUAL-04 | Phase 1 | Complete |
 | QUAL-05 | Phase 1 | Complete |
 
@@ -141,4 +141,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-01-22*
-*Last updated: 2026-01-23 after Phase 1 completion*
+*Last updated: 2026-01-23 after Phase 2 completion*

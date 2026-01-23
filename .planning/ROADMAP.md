@@ -13,7 +13,7 @@ text-transform delivers a CLI tool for bidirectional HTML/Markdown conversion wi
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation** - TypeScript project structure, core types, converter interface
-- [ ] **Phase 2: HTML to Markdown** - Primary conversion path with full HTML element support
+- [x] **Phase 2: HTML to Markdown** - Primary conversion path with full HTML element support
 - [ ] **Phase 3: Markdown to HTML** - Bidirectional conversion capability
 - [ ] **Phase 4: CLI Framework** - Command-line interface with subcommands and help
 - [ ] **Phase 5: Standard I/O** - stdin/stdout support with format detection
@@ -55,7 +55,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 02-01-PLAN.md - HTML to Markdown converter with turndown, GFM support, and custom language extraction
+- [x] 02-01-PLAN.md - HTML to Markdown converter with turndown, GFM support, and custom language extraction
 
 ### Phase 3: Markdown to HTML
 **Goal**: Convert Markdown back to HTML for platforms that need HTML input
@@ -161,7 +161,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 1/1 | Complete | 2026-01-23 |
-| 2. HTML to Markdown | 0/1 | Not started | - |
+| 2. HTML to Markdown | 1/1 | Complete | 2026-01-23 |
 | 3. Markdown to HTML | 0/1 | Not started | - |
 | 4. CLI Framework | 0/1 | Not started | - |
 | 5. Standard I/O | 0/1 | Not started | - |
