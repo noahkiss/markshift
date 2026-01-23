@@ -1,0 +1,176 @@
+# Roadmap: text-transform
+
+## Overview
+
+text-transform delivers a CLI tool for bidirectional HTML/Markdown conversion with clipboard integration. The journey moves from core conversion engine (the foundational value) through CLI interface and I/O modes, then adds clipboard and RTF support for seamless workflow integration, finishing with content extraction and cross-platform distribution. Each phase delivers a complete, testable capability that builds toward the goal of invisible format conversion in daily workflows.
+
+## Phases
+
+**Phase Numbering:**
+- Integer phases (1, 2, 3): Planned milestone work
+- Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
+
+Decimal phases appear between their surrounding integers in numeric order.
+
+- [ ] **Phase 1: Foundation** - TypeScript project structure, core types, converter interface
+- [ ] **Phase 2: HTML to Markdown** - Primary conversion path with full HTML element support
+- [ ] **Phase 3: Markdown to HTML** - Bidirectional conversion capability
+- [ ] **Phase 4: CLI Framework** - Command-line interface with subcommands and help
+- [ ] **Phase 5: Standard I/O** - stdin/stdout support with format detection
+- [ ] **Phase 6: Clipboard Integration** - Read/write system clipboard with format preference
+- [ ] **Phase 7: RTF Pipeline** - RTF to Markdown via HTML intermediate
+- [ ] **Phase 8: Content Extraction** - Clean main content extraction from web pages
+- [ ] **Phase 9: Platform & Distribution** - Cross-platform support and Homebrew tap
+
+## Phase Details
+
+### Phase 1: Foundation
+**Goal**: Establish project structure and core abstractions that all converters will use
+**Depends on**: Nothing (first phase)
+**Requirements**: QUAL-04, QUAL-05
+**Success Criteria** (what must be TRUE):
+  1. TypeScript project compiles with strict mode enabled
+  2. Converter interface is defined with standard signature
+  3. Converter registry can register and lookup converters by format pair
+  4. Unit tests run and pass via npm test
+  5. Project structure follows package organization from research (src/converters/, src/cli/, etc.)
+**Plans**: TBD
+
+Plans:
+- [ ] 01-01: TypeScript project setup and core interface definitions
+
+### Phase 2: HTML to Markdown
+**Goal**: Convert HTML to clean, semantic Markdown
+**Depends on**: Phase 1
+**Requirements**: CONV-01, CONV-02, CONV-03, CONV-04, CONV-05, CONV-10, QUAL-01, QUAL-02, QUAL-03
+**Success Criteria** (what must be TRUE):
+  1. User can convert HTML with headings, paragraphs, and emphasis to equivalent Markdown
+  2. User can convert HTML lists (ordered and unordered, nested) to Markdown
+  3. User can convert HTML links and images to Markdown syntax
+  4. User can convert HTML code blocks and inline code to Markdown with language hints preserved
+  5. User can convert HTML tables to Markdown tables
+  6. Malformed HTML does not crash the converter (graceful handling)
+  7. Whitespace in code blocks is preserved exactly
+  8. UTF-8 characters including emoji and CJK render correctly
+**Plans**: TBD
+
+Plans:
+- [ ] 02-01: HTML to Markdown converter with turndown
+
+### Phase 3: Markdown to HTML
+**Goal**: Convert Markdown back to HTML for platforms that need HTML input
+**Depends on**: Phase 1
+**Requirements**: CONV-06
+**Success Criteria** (what must be TRUE):
+  1. User can convert Markdown to valid HTML
+  2. Round-trip conversion (HTML->MD->HTML) preserves semantic meaning
+  3. Output HTML is suitable for pasting into Teams or email
+**Plans**: TBD
+
+Plans:
+- [ ] 03-01: Markdown to HTML converter with marked
+
+### Phase 4: CLI Framework
+**Goal**: Provide a usable command-line interface with standard UX patterns
+**Depends on**: Phase 2, Phase 3
+**Requirements**: CLI-01, CLI-02, CLI-03, CLI-04, CLI-05, CLI-06
+**Success Criteria** (what must be TRUE):
+  1. User can run `text-transform --help` and see clear usage instructions
+  2. User can run subcommands for conversion (e.g., `text-transform html-to-md`)
+  3. --quiet mode suppresses all non-essential output
+  4. --verbose mode shows detailed processing information
+  5. Exit code 0 on success, non-zero with descriptive message on error
+**Plans**: TBD
+
+Plans:
+- [ ] 04-01: CLI structure with commander.js
+
+### Phase 5: Standard I/O
+**Goal**: Enable pipeline usage with stdin/stdout and format auto-detection
+**Depends on**: Phase 4
+**Requirements**: IO-01, IO-02, IO-06, CONV-07
+**Success Criteria** (what must be TRUE):
+  1. User can pipe HTML via stdin and receive Markdown on stdout
+  2. User can pipe Markdown via stdin and receive HTML on stdout
+  3. Format is auto-detected when not explicitly specified
+  4. --json flag outputs structured result with metadata
+**Plans**: TBD
+
+Plans:
+- [ ] 05-01: stdin/stdout handling and format detection
+
+### Phase 6: Clipboard Integration
+**Goal**: Read from and write to system clipboard for seamless workflow
+**Depends on**: Phase 5
+**Requirements**: IO-03, IO-04, IO-05, PLAT-01, PLAT-03
+**Success Criteria** (what must be TRUE):
+  1. User can read content from clipboard using --paste flag
+  2. User can write conversion result to clipboard using --copy flag
+  3. Multiple clipboard formats are read with preference order (HTML > RTF > text)
+  4. Clipboard operations work on macOS
+  5. Clipboard operations work on Linux
+**Plans**: TBD
+
+Plans:
+- [ ] 06-01: Clipboard read/write with clipboardy
+
+### Phase 7: RTF Pipeline
+**Goal**: Convert RTF content (common in macOS clipboard) to Markdown
+**Depends on**: Phase 2, Phase 6
+**Requirements**: CONV-08
+**Success Criteria** (what must be TRUE):
+  1. User can convert RTF content to Markdown
+  2. RTF from macOS Notes/Word pastes convert correctly
+  3. RTF is processed via RTF->HTML->Markdown pipeline
+**Plans**: TBD
+
+Plans:
+- [ ] 07-01: RTF to HTML converter and pipeline integration
+
+### Phase 8: Content Extraction
+**Goal**: Extract main content from web pages, stripping navigation and ads
+**Depends on**: Phase 2
+**Requirements**: CLI-07, CONV-09
+**Success Criteria** (what must be TRUE):
+  1. User can use --extract-content flag to get main article content
+  2. Navigation, ads, and boilerplate are stripped from output
+  3. Semantic div-based structures are converted to proper Markdown tables
+**Plans**: TBD
+
+Plans:
+- [ ] 08-01: Mozilla Readability integration
+
+### Phase 9: Platform & Distribution
+**Goal**: Cross-platform availability and easy installation via Homebrew
+**Depends on**: Phase 6
+**Requirements**: PLAT-02, PLAT-04
+**Success Criteria** (what must be TRUE):
+  1. Tool runs correctly on Linux
+  2. User can install via `brew install` from custom tap
+  3. Homebrew formula handles dependencies correctly
+**Plans**: TBD
+
+Plans:
+- [ ] 09-01: Homebrew tap and cross-platform validation
+
+## Progress
+
+**Execution Order:**
+Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9
+
+| Phase | Plans Complete | Status | Completed |
+|-------|----------------|--------|-----------|
+| 1. Foundation | 0/1 | Not started | - |
+| 2. HTML to Markdown | 0/1 | Not started | - |
+| 3. Markdown to HTML | 0/1 | Not started | - |
+| 4. CLI Framework | 0/1 | Not started | - |
+| 5. Standard I/O | 0/1 | Not started | - |
+| 6. Clipboard Integration | 0/1 | Not started | - |
+| 7. RTF Pipeline | 0/1 | Not started | - |
+| 8. Content Extraction | 0/1 | Not started | - |
+| 9. Platform & Distribution | 0/1 | Not started | - |
+
+---
+*Roadmap created: 2026-01-22*
+*Depth: comprehensive (9 phases)*
+*Total v1 requirements: 32*

@@ -16,7 +16,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **CONV-05**: Convert HTML tables to Markdown tables
 - [ ] **CONV-06**: Convert Markdown to HTML (bidirectional conversion)
 - [ ] **CONV-07**: Auto-detect input format (HTML vs plain text vs RTF)
-- [ ] **CONV-08**: Convert RTF to Markdown via RTF→HTML→Markdown pipeline
+- [ ] **CONV-08**: Convert RTF to Markdown via RTF->HTML->Markdown pipeline
 - [ ] **CONV-09**: Semantic table detection - convert div-based fake tables to markdown tables
 - [ ] **CONV-10**: Handle malformed HTML gracefully without crashes
 
@@ -101,13 +101,44 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| | | Pending |
+| CONV-01 | Phase 2 | Pending |
+| CONV-02 | Phase 2 | Pending |
+| CONV-03 | Phase 2 | Pending |
+| CONV-04 | Phase 2 | Pending |
+| CONV-05 | Phase 2 | Pending |
+| CONV-06 | Phase 3 | Pending |
+| CONV-07 | Phase 5 | Pending |
+| CONV-08 | Phase 7 | Pending |
+| CONV-09 | Phase 8 | Pending |
+| CONV-10 | Phase 2 | Pending |
+| IO-01 | Phase 5 | Pending |
+| IO-02 | Phase 5 | Pending |
+| IO-03 | Phase 6 | Pending |
+| IO-04 | Phase 6 | Pending |
+| IO-05 | Phase 6 | Pending |
+| IO-06 | Phase 5 | Pending |
+| CLI-01 | Phase 4 | Pending |
+| CLI-02 | Phase 4 | Pending |
+| CLI-03 | Phase 4 | Pending |
+| CLI-04 | Phase 4 | Pending |
+| CLI-05 | Phase 4 | Pending |
+| CLI-06 | Phase 4 | Pending |
+| CLI-07 | Phase 8 | Pending |
+| PLAT-01 | Phase 6 | Pending |
+| PLAT-02 | Phase 9 | Pending |
+| PLAT-03 | Phase 6 | Pending |
+| PLAT-04 | Phase 9 | Pending |
+| QUAL-01 | Phase 2 | Pending |
+| QUAL-02 | Phase 2 | Pending |
+| QUAL-03 | Phase 2 | Pending |
+| QUAL-04 | Phase 1 | Pending |
+| QUAL-05 | Phase 1 | Pending |
 
 **Coverage:**
-- v1 requirements: 29 total
-- Mapped to phases: (to be determined)
-- Unmapped: (to be determined)
+- v1 requirements: 32 total
+- Mapped to phases: 32
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-01-22*
-*Last updated: 2026-01-22 after initial definition*
+*Last updated: 2026-01-22 after roadmap creation*
