@@ -51,8 +51,8 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **QUAL-01**: Preserve whitespace in code blocks and preformatted text
 - [ ] **QUAL-02**: Handle character encoding correctly (UTF-8, emoji, CJK characters)
 - [ ] **QUAL-03**: Decode HTML entities during conversion
-- [ ] **QUAL-04**: Fast execution (<100ms for typical documents)
-- [ ] **QUAL-05**: Semantic meaning preserved over visual appearance
+- [x] **QUAL-04**: Fast execution (<100ms for typical documents)
+- [x] **QUAL-05**: Semantic meaning preserved over visual appearance
 
 ## v2 Requirements
 
@@ -131,8 +131,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | QUAL-01 | Phase 2 | Pending |
 | QUAL-02 | Phase 2 | Pending |
 | QUAL-03 | Phase 2 | Pending |
-| QUAL-04 | Phase 1 | Pending |
-| QUAL-05 | Phase 1 | Pending |
+| QUAL-04 | Phase 1 | Complete |
+| QUAL-05 | Phase 1 | Complete |
 
 **Coverage:**
 - v1 requirements: 32 total
@@ -141,4 +141,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-01-22*
-*Last updated: 2026-01-22 after roadmap creation*
+*Last updated: 2026-01-23 after Phase 1 completion*
