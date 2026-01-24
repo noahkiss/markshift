@@ -148,10 +148,10 @@ Plans:
   1. Tool runs correctly on Linux
   2. User can install via `brew install` from custom tap
   3. Homebrew formula handles dependencies correctly
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 09-01: Homebrew tap and cross-platform validation
+- [ ] 09-01-PLAN.md — Package metadata and Homebrew formula for npm-based distribution
 
 ## Progress
 
