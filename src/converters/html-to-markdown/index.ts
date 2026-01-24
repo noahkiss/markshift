@@ -8,6 +8,7 @@ import { gfm } from '@truto/turndown-plugin-gfm';
 import type { ConvertOptions, ConvertResult, Format } from '../../types/index.js';
 import type { Converter } from '../index.js';
 import { addCodeLanguageRule } from './rules/code-language.js';
+import { addSemanticTableRule } from './rules/semantic-table.js';
 
 /**
  * Converts HTML to Markdown using turndown with GFM plugin
@@ -16,6 +17,7 @@ import { addCodeLanguageRule } from './rules/code-language.js';
  * - ATX-style headings (# H1, ## H2, etc.)
  * - Fenced code blocks with language extraction
  * - GFM tables, strikethrough, task lists
+ * - Semantic/ARIA table support (div-based tables with role="table")
  * - Handles malformed HTML gracefully via domino parser
  */
 export class HtmlToMarkdownConverter implements Converter {
@@ -41,6 +43,9 @@ export class HtmlToMarkdownConverter implements Converter {
     // Add custom rule for language extraction from code blocks
     // Must be added AFTER gfm to override default code block handling
     addCodeLanguageRule(this.turndown);
+
+    // Add custom rule for semantic/ARIA tables (div-based tables)
+    addSemanticTableRule(this.turndown);
   }
 
   convert(input: string, _options?: ConvertOptions): ConvertResult {
