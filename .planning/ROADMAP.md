@@ -16,7 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: HTML to Markdown** - Primary conversion path with full HTML element support
 - [x] **Phase 3: Markdown to HTML** - Bidirectional conversion capability
 - [x] **Phase 4: CLI Framework** - Command-line interface with subcommands and help
-- [ ] **Phase 5: Standard I/O** - stdin/stdout support with format detection
+- [x] **Phase 5: Standard I/O** - stdin/stdout support with format detection
 - [ ] **Phase 6: Clipboard Integration** - Read/write system clipboard with format preference
 - [ ] **Phase 7: RTF Pipeline** - RTF to Markdown via HTML intermediate
 - [ ] **Phase 8: Content Extraction** - Clean main content extraction from web pages
@@ -97,7 +97,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 05-01-PLAN.md — Format detection, convert command, and JSON output
+- [x] 05-01-PLAN.md — Format detection, convert command, and JSON output
 
 ### Phase 6: Clipboard Integration
 **Goal**: Read from and write to system clipboard for seamless workflow
@@ -164,7 +164,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9
 | 2. HTML to Markdown | 1/1 | Complete | 2026-01-23 |
 | 3. Markdown to HTML | 1/1 | Complete | 2026-01-23 |
 | 4. CLI Framework | 1/1 | Complete | 2026-01-23 |
-| 5. Standard I/O | 0/1 | Planned | - |
+| 5. Standard I/O | 1/1 | Complete | 2026-01-23 |
 | 6. Clipboard Integration | 0/1 | Not started | - |
 | 7. RTF Pipeline | 0/1 | Not started | - |
 | 8. Content Extraction | 0/1 | Not started | - |
