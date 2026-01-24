@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-22)
 
 **Core value:** Seamless, reliable conversion that fits into existing workflows - no more hunting for converters or manually cleaning up formatting
-**Current focus:** Phase 7 complete, RTF to Markdown pipeline via @iarna/rtf-to-html
+**Current focus:** Phase 8 complete, content extraction and semantic tables
 
 ## Current Position
 
-Phase: 7 of 9 (RTF Pipeline) - COMPLETE
+Phase: 8 of 9 (Content Extraction) - COMPLETE
 Plan: 1 of 1 in current phase
 Status: Phase complete
-Last activity: 2026-01-24 - Completed 07-01-PLAN.md
+Last activity: 2026-01-24 - Completed 08-01-PLAN.md
 
-Progress: [#######---] 78% (7/9 phases, 7/9 plans)
+Progress: [########--] 89% (8/9 phases, 8/9 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 7
-- Average duration: 7.4 min
-- Total execution time: 52 min
+- Total plans completed: 8
+- Average duration: 7.5 min
+- Total execution time: 60 min
 
 **By Phase:**
 
@@ -34,9 +34,10 @@ Progress: [#######---] 78% (7/9 phases, 7/9 plans)
 | 05-standard-io | 1 | 14 min | 14 min |
 | 06-clipboard-integration | 1 | 6 min | 6 min |
 | 07-rtf-pipeline | 1 | 10 min | 10 min |
+| 08-content-extraction | 1 | 8 min | 8 min |
 
 **Recent Trend:**
-- Last 5 plans: 03-01 (3 min), 04-01 (9 min), 05-01 (14 min), 06-01 (6 min), 07-01 (10 min)
+- Last 5 plans: 04-01 (9 min), 05-01 (14 min), 06-01 (6 min), 07-01 (10 min), 08-01 (8 min)
 - Trend: Stable
 
 *Updated after each plan completion*
@@ -71,6 +72,9 @@ Recent decisions affecting current work:
 | Pipeline pattern RTF->HTML->MD | 07-01 | Leverage existing HtmlToMarkdownConverter |
 | Async converter for RTF | 07-01 | Library uses callback API, needs Promise |
 | RTF magic bytes detection | 07-01 | Check {\rtf prefix in format-detect.ts |
+| Skip isProbablyReaderable() | 08-01 | Doesn't work with linkedom; validate parse result instead |
+| 100 char content threshold | 08-01 | Minimum chars for valid extraction |
+| Try-catch for malformed HTML | 08-01 | Graceful handling returns null |
 
 ### Pending Todos
 
@@ -83,18 +87,18 @@ None.
 ## Session Continuity
 
 Last session: 2026-01-24
-Stopped at: Completed 07-01-PLAN.md (RTF Pipeline)
+Stopped at: Completed 08-01-PLAN.md (Content Extraction)
 Resume file: None
 
-Phase 7 context (from 07-01-SUMMARY.md):
-- RtfToHtmlConverter at src/converters/rtf-to-html/index.ts
-- TypeScript declarations at src/types/rtf-to-html.d.ts
-- RTF detection via {\rtf magic bytes in format-detect.ts
-- Pipeline: RTF -> HTML -> Markdown (using existing HtmlToMarkdownConverter)
-- 192 total tests passing (23 new in Phase 7)
+Phase 8 context (from 08-01-SUMMARY.md):
+- Content extractor at src/converters/html-to-markdown/extractors/content.ts
+- Semantic table rule at src/converters/html-to-markdown/rules/semantic-table.ts
+- Uses @mozilla/readability and linkedom
+- --extract-content CLI flag for clean article extraction
+- 209 total tests passing (17 new in Phase 8)
 
-RTF conversion complete:
-- `markshift convert --paste` - RTF clipboard content converts to Markdown
-- `echo '{\rtf1...}' | markshift convert` - RTF stdin converts to Markdown
-- Bold, italic, underline formatting preserved through pipeline
-- JSON output includes sourceFormat='rtf' for RTF input
+Content extraction complete:
+- `markshift convert --extract-content` - strips nav/ads/boilerplate from HTML
+- ARIA tables with role="table" convert to Markdown tables
+- Extraction applies to RTF->HTML intermediate result too
+- Verbose mode shows extraction details
