@@ -17,7 +17,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **CONV-06**: Convert Markdown to HTML (bidirectional conversion)
 - [ ] **CONV-07**: Auto-detect input format (HTML vs plain text vs RTF)
 - [x] **CONV-08**: Convert RTF to Markdown via RTF->HTML->Markdown pipeline
-- [ ] **CONV-09**: Semantic table detection - convert div-based fake tables to markdown tables
+- [x] **CONV-09**: Semantic table detection - convert div-based fake tables to markdown tables
 - [x] **CONV-10**: Handle malformed HTML gracefully without crashes
 
 ### Input/Output
@@ -37,7 +37,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **CLI-04**: Verbose mode for debugging (--verbose)
 - [x] **CLI-05**: Error messages with actionable guidance
 - [x] **CLI-06**: Proper exit codes (0 for success, non-zero for errors)
-- [ ] **CLI-07**: Content extraction flag to strip nav/ads from web pages (--extract-content)
+- [x] **CLI-07**: Content extraction flag to strip nav/ads from web pages (--extract-content)
 
 ### Platform Support
 
@@ -109,7 +109,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CONV-06 | Phase 3 | Complete |
 | CONV-07 | Phase 5 | Pending |
 | CONV-08 | Phase 7 | Complete |
-| CONV-09 | Phase 8 | Pending |
+| CONV-09 | Phase 8 | Complete |
 | CONV-10 | Phase 2 | Complete |
 | IO-01 | Phase 5 | Pending |
 | IO-02 | Phase 5 | Pending |
@@ -123,7 +123,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CLI-04 | Phase 4 | Complete |
 | CLI-05 | Phase 4 | Complete |
 | CLI-06 | Phase 4 | Complete |
-| CLI-07 | Phase 8 | Pending |
+| CLI-07 | Phase 8 | Complete |
 | PLAT-01 | Phase 6 | Complete |
 | PLAT-02 | Phase 9 | Pending |
 | PLAT-03 | Phase 6 | Complete |
@@ -141,4 +141,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-01-22*
-*Last updated: 2026-01-24 after Phase 7 completion*
+*Last updated: 2026-01-24 after Phase 8 completion*

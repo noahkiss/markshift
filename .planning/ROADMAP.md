@@ -19,7 +19,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 5: Standard I/O** - stdin/stdout support with format detection
 - [x] **Phase 6: Clipboard Integration** - Read/write system clipboard with format preference
 - [x] **Phase 7: RTF Pipeline** - RTF to Markdown via HTML intermediate
-- [ ] **Phase 8: Content Extraction** - Clean main content extraction from web pages
+- [x] **Phase 8: Content Extraction** - Clean main content extraction from web pages
 - [ ] **Phase 9: Platform & Distribution** - Cross-platform support and Homebrew tap
 
 ## Phase Details
@@ -138,7 +138,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 08-01-PLAN.md — Content extraction with Readability, semantic table detection, CLI flag
+- [x] 08-01-PLAN.md — Content extraction with Readability, semantic table detection, CLI flag
 
 ### Phase 9: Platform & Distribution
 **Goal**: Cross-platform availability and easy installation via Homebrew
@@ -167,7 +167,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9
 | 5. Standard I/O | 1/1 | Complete | 2026-01-23 |
 | 6. Clipboard Integration | 1/1 | Complete | 2026-01-24 |
 | 7. RTF Pipeline | 1/1 | Complete | 2026-01-24 |
-| 8. Content Extraction | 0/1 | Not started | - |
+| 8. Content Extraction | 1/1 | Complete | 2026-01-24 |
 | 9. Platform & Distribution | 0/1 | Not started | - |
 
 ---
