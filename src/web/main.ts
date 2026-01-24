@@ -1,129 +1,144 @@
 import { htmlToMarkdown, markdownToHtml, extractContent } from './browser-converters.js';
 
 // DOM Elements
-const form = document.getElementById('converter-form') as HTMLFormElement;
-const inputEl = document.getElementById('input') as HTMLTextAreaElement;
-const outputEl = document.getElementById('output') as HTMLTextAreaElement;
-const modeEl = document.getElementById('mode') as HTMLSelectElement;
+const htmlPane = document.getElementById('html-pane') as HTMLTextAreaElement;
+const mdPane = document.getElementById('md-pane') as HTMLTextAreaElement;
 const extractEl = document.getElementById('extract-content') as HTMLInputElement;
-const copyBtn = document.getElementById('copy-btn') as HTMLButtonElement;
+const copyBtns = document.querySelectorAll('.copy-btn') as NodeListOf<HTMLButtonElement>;
 
-// Form submit handler - performs conversion
-function handleSubmit(event: Event): void {
-  event.preventDefault();
+// Flag to prevent circular updates
+let isUpdating = false;
 
-  const input = inputEl.value.trim();
-  if (!input) {
-    outputEl.value = '';
+// Debounce helper for typing
+function debounce<T extends (...args: unknown[]) => void>(fn: T, ms: number): T {
+  let timeout: ReturnType<typeof setTimeout>;
+  return ((...args: unknown[]) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => fn(...args), ms);
+  }) as T;
+}
+
+// Convert HTML to Markdown and update MD pane
+function updateMarkdownPane(): void {
+  if (isUpdating) return;
+
+  const html = htmlPane.value.trim();
+  if (!html) {
+    isUpdating = true;
+    mdPane.value = '';
+    isUpdating = false;
     return;
   }
 
-  const mode = modeEl.value;
-
   try {
-    if (mode === 'html-to-md') {
-      let htmlContent = input;
+    isUpdating = true;
+    let htmlContent = html;
 
-      // Extract main content if checkbox is checked
-      if (extractEl.checked) {
-        const extracted = extractContent(input);
-        if (extracted && extracted.content) {
-          htmlContent = extracted.content;
-        } else {
-          outputEl.value = 'Error: Could not extract content. The input may be too short or not contain enough readable content.';
-          return;
-        }
+    // Extract main content if checkbox is checked
+    if (extractEl.checked) {
+      const extracted = extractContent(html);
+      if (extracted && extracted.content) {
+        htmlContent = extracted.content;
       }
-
-      const markdown = htmlToMarkdown(htmlContent);
-      outputEl.value = markdown;
-    } else if (mode === 'md-to-html') {
-      const html = markdownToHtml(input);
-      outputEl.value = html;
     }
+
+    const markdown = htmlToMarkdown(htmlContent);
+    mdPane.value = markdown;
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unknown error occurred';
-    outputEl.value = `Error: ${message}`;
+    const message = error instanceof Error ? error.message : 'Conversion error';
+    mdPane.value = `Error: ${message}`;
+  } finally {
+    isUpdating = false;
   }
 }
 
-// Copy button handler - copies output to clipboard
-async function handleCopy(): Promise<void> {
-  const output = outputEl.value;
-  if (!output) {
+// Convert Markdown to HTML and update HTML pane
+function updateHtmlPane(): void {
+  if (isUpdating) return;
+
+  const md = mdPane.value.trim();
+  if (!md) {
+    isUpdating = true;
+    htmlPane.value = '';
+    isUpdating = false;
     return;
   }
 
   try {
-    await navigator.clipboard.writeText(output);
-
-    // Visual feedback
-    const originalText = copyBtn.textContent;
-    copyBtn.textContent = 'Copied!';
-    copyBtn.disabled = true;
-
-    setTimeout(() => {
-      copyBtn.textContent = originalText;
-      copyBtn.disabled = false;
-    }, 1500);
+    isUpdating = true;
+    const html = markdownToHtml(md);
+    htmlPane.value = html;
   } catch (error) {
-    // Fallback for browsers without clipboard API
-    outputEl.select();
-    document.execCommand('copy');
-
-    copyBtn.textContent = 'Copied!';
-    setTimeout(() => {
-      copyBtn.textContent = 'Copy to Clipboard';
-    }, 1500);
+    const message = error instanceof Error ? error.message : 'Conversion error';
+    htmlPane.value = `Error: ${message}`;
+  } finally {
+    isUpdating = false;
   }
 }
 
-// Mode change handler - disable extract option for Markdown input
-function handleModeChange(): void {
-  const mode = modeEl.value;
+// Debounced versions for typing
+const debouncedUpdateMarkdown = debounce(updateMarkdownPane, 300);
+const debouncedUpdateHtml = debounce(updateHtmlPane, 300);
 
-  if (mode === 'md-to-html') {
-    extractEl.checked = false;
-    extractEl.disabled = true;
-  } else {
-    extractEl.disabled = false;
-  }
-}
-
-// Paste handler - extract HTML from clipboard when available
-function handlePaste(event: ClipboardEvent): void {
-  const mode = modeEl.value;
-
-  // Only intercept paste in HTML-to-MD mode
-  if (mode !== 'html-to-md') {
-    return;
-  }
-
+// Handle paste into HTML pane - detect rich text
+function handleHtmlPaste(event: ClipboardEvent): void {
   const clipboardData = event.clipboardData;
-  if (!clipboardData) {
-    return;
-  }
+  if (!clipboardData) return;
 
   // Check if HTML is available in clipboard
   const html = clipboardData.getData('text/html');
   if (html && html.trim()) {
-    // Prevent default paste behavior
     event.preventDefault();
-
-    // Insert HTML content into textarea
-    inputEl.value = html;
-
-    // Auto-convert after paste
-    handleSubmit(new Event('submit'));
+    htmlPane.value = html;
+    updateMarkdownPane();
   }
-  // If no HTML, let default paste behavior handle plain text
+  // If no HTML, let default paste handle plain text, then update
+}
+
+// Copy button handler
+async function handleCopy(event: Event): Promise<void> {
+  const btn = event.currentTarget as HTMLButtonElement;
+  const targetId = btn.dataset.target;
+  if (!targetId) return;
+
+  const textarea = document.getElementById(targetId) as HTMLTextAreaElement;
+  const content = textarea.value;
+  if (!content) return;
+
+  try {
+    await navigator.clipboard.writeText(content);
+    showCopyFeedback(btn);
+  } catch {
+    // Fallback
+    textarea.select();
+    document.execCommand('copy');
+    showCopyFeedback(btn);
+  }
+}
+
+function showCopyFeedback(btn: HTMLButtonElement): void {
+  const originalText = btn.textContent;
+  btn.textContent = 'Copied!';
+  btn.disabled = true;
+
+  setTimeout(() => {
+    btn.textContent = originalText;
+    btn.disabled = false;
+  }, 1500);
 }
 
 // Event listeners
-form.addEventListener('submit', handleSubmit);
-copyBtn.addEventListener('click', handleCopy);
-modeEl.addEventListener('change', handleModeChange);
-inputEl.addEventListener('paste', handlePaste);
+htmlPane.addEventListener('input', debouncedUpdateMarkdown);
+htmlPane.addEventListener('paste', handleHtmlPaste);
+mdPane.addEventListener('input', debouncedUpdateHtml);
 
-// Initialize state
-handleModeChange();
+copyBtns.forEach(btn => {
+  btn.addEventListener('click', handleCopy);
+});
+
+// Re-convert when extract option changes
+extractEl.addEventListener('change', () => {
+  if (htmlPane.value.trim()) {
+    updateMarkdownPane();
+  }
+});

@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>markshift - HTML/Markdown Converter</title>
-  <script type="module" crossorigin src="/markshift/assets/index-CJM5CkOC.js"></script>
-  <link rel="stylesheet" crossorigin href="/markshift/assets/index-mVzI94PP.css">
+  <script type="module" crossorigin src="/markshift/assets/index-Cbxkkaor.js"></script>
+  <link rel="stylesheet" crossorigin href="/markshift/assets/index-Di-Ygguq.css">
 </head>
 <body>
   <main class="container">
@@ -14,46 +14,38 @@
       <p class="tagline">Convert between HTML and Markdown in your browser</p>
     </header>
 
-    <form id="converter-form">
-      <div class="input-section">
-        <label for="input">Input</label>
+    <div class="options-bar">
+      <div class="checkbox-group">
+        <input type="checkbox" id="extract-content">
+        <label for="extract-content">Extract main content (clean web pages)</label>
+      </div>
+    </div>
+
+    <div class="editor-panes">
+      <div class="pane">
+        <div class="pane-header">
+          <label for="html-pane">HTML</label>
+          <button type="button" class="btn btn-small copy-btn" data-target="html-pane">Copy</button>
+        </div>
         <textarea
-          id="input"
-          rows="12"
-          placeholder="Paste content here (rich text from web pages automatically detected)..."
+          id="html-pane"
+          placeholder="Paste HTML here (rich text from web pages automatically detected)..."
           spellcheck="false"
         ></textarea>
       </div>
 
-      <div class="controls">
-        <div class="control-group">
-          <label for="mode">Mode</label>
-          <select id="mode">
-            <option value="html-to-md">HTML to Markdown</option>
-            <option value="md-to-html">Markdown to HTML</option>
-          </select>
+      <div class="pane">
+        <div class="pane-header">
+          <label for="md-pane">Markdown</label>
+          <button type="button" class="btn btn-small copy-btn" data-target="md-pane">Copy</button>
         </div>
-
-        <div class="control-group checkbox-group">
-          <input type="checkbox" id="extract-content">
-          <label for="extract-content">Extract main content (clean web pages)</label>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Convert</button>
-      </div>
-
-      <div class="output-section">
-        <label for="output">Output</label>
         <textarea
-          id="output"
-          rows="12"
-          readonly
-          placeholder="Converted output will appear here..."
+          id="md-pane"
+          placeholder="Paste or type Markdown here..."
           spellcheck="false"
         ></textarea>
-        <button type="button" id="copy-btn" class="btn btn-secondary">Copy to Clipboard</button>
       </div>
-    </form>
+    </div>
 
     <footer>
       <p>
