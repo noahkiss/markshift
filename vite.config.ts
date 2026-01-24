@@ -7,6 +7,12 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export default defineConfig({
   root: 'src/web',
   base: '/markshift/',
+  server: {
+    port: 6275,
+  },
+  preview: {
+    port: 6275,
+  },
   build: {
     outDir: '../../docs',
     emptyOutDir: true,
