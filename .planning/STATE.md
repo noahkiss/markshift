@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-22)
 
 **Core value:** Seamless, reliable conversion that fits into existing workflows - no more hunting for converters or manually cleaning up formatting
-**Current focus:** Phase 6 complete, clipboard integration with --paste and --copy flags
+**Current focus:** Phase 7 complete, RTF to Markdown pipeline via @iarna/rtf-to-html
 
 ## Current Position
 
-Phase: 6 of 9 (Clipboard Integration) - COMPLETE
+Phase: 7 of 9 (RTF Pipeline) - COMPLETE
 Plan: 1 of 1 in current phase
 Status: Phase complete
-Last activity: 2026-01-24 - Completed 06-01-PLAN.md
+Last activity: 2026-01-24 - Completed 07-01-PLAN.md
 
-Progress: [######----] 67% (6/9 phases, 6/9 plans)
+Progress: [#######---] 78% (7/9 phases, 7/9 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 6
-- Average duration: 7.0 min
-- Total execution time: 42 min
+- Total plans completed: 7
+- Average duration: 7.4 min
+- Total execution time: 52 min
 
 **By Phase:**
 
@@ -33,9 +33,10 @@ Progress: [######----] 67% (6/9 phases, 6/9 plans)
 | 04-cli-framework | 1 | 9 min | 9 min |
 | 05-standard-io | 1 | 14 min | 14 min |
 | 06-clipboard-integration | 1 | 6 min | 6 min |
+| 07-rtf-pipeline | 1 | 10 min | 10 min |
 
 **Recent Trend:**
-- Last 5 plans: 02-01 (6 min), 03-01 (3 min), 04-01 (9 min), 05-01 (14 min), 06-01 (6 min)
+- Last 5 plans: 03-01 (3 min), 04-01 (9 min), 05-01 (14 min), 06-01 (6 min), 07-01 (10 min)
 - Trend: Stable
 
 *Updated after each plan completion*
@@ -66,6 +67,10 @@ Recent decisions affecting current work:
 | @crosscopy/clipboard for multi-format | 06-01 | Supports HTML, RTF, text - clipboardy is text-only |
 | ReadInputResult interface | 06-01 | Carry sourceFormat from clipboard reads |
 | Mutual exclusivity enforcement | 06-01 | --paste/--copy cannot combine with file I/O |
+| @iarna/rtf-to-html for RTF | 07-01 | Pure JS, ~8K downloads, handles macOS RTF |
+| Pipeline pattern RTF->HTML->MD | 07-01 | Leverage existing HtmlToMarkdownConverter |
+| Async converter for RTF | 07-01 | Library uses callback API, needs Promise |
+| RTF magic bytes detection | 07-01 | Check {\rtf prefix in format-detect.ts |
 
 ### Pending Todos
 
@@ -78,19 +83,18 @@ None.
 ## Session Continuity
 
 Last session: 2026-01-24
-Stopped at: Completed 06-01-PLAN.md (Clipboard Integration)
+Stopped at: Completed 07-01-PLAN.md (RTF Pipeline)
 Resume file: None
 
-Phase 6 context (from 06-01-SUMMARY.md):
-- Clipboard utilities at src/cli/utils/clipboard.ts (readClipboard, writeClipboard)
-- Updated GlobalOptions with paste/copy flags
-- Format preference chain: HTML > RTF > text
-- RTF detection with warning (conversion in Phase 7)
-- 169 total tests passing (13 new in Phase 6)
+Phase 7 context (from 07-01-SUMMARY.md):
+- RtfToHtmlConverter at src/converters/rtf-to-html/index.ts
+- TypeScript declarations at src/types/rtf-to-html.d.ts
+- RTF detection via {\rtf magic bytes in format-detect.ts
+- Pipeline: RTF -> HTML -> Markdown (using existing HtmlToMarkdownConverter)
+- 192 total tests passing (23 new in Phase 7)
 
-Clipboard integration complete:
-- `markshift convert --paste` - Read from clipboard, auto-detect format
-- `markshift convert --copy` - Write result to clipboard
-- All commands support --paste and --copy global flags
-- Mutual exclusivity: --paste cannot combine with file input, --copy cannot combine with file output
-- Multi-format clipboard reading with HTML > RTF > text preference
+RTF conversion complete:
+- `markshift convert --paste` - RTF clipboard content converts to Markdown
+- `echo '{\rtf1...}' | markshift convert` - RTF stdin converts to Markdown
+- Bold, italic, underline formatting preserved through pipeline
+- JSON output includes sourceFormat='rtf' for RTF input
