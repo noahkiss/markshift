@@ -13,7 +13,8 @@ const program = new Command()
   .description('Convert between HTML and Markdown formats')
   .version(VERSION, '-v, --version', 'display version number')
   .option('-q, --quiet', 'suppress all non-essential output')
-  .option('-V, --verbose', 'show detailed processing information');
+  .option('-V, --verbose', 'show detailed processing information')
+  .option('--json', 'output results as JSON (for machine parsing)');
 
 // Add subcommands
 program.addCommand(htmlToMdCommand);
