@@ -46,6 +46,12 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **PLAT-03**: Cross-platform clipboard handling (macOS, Linux)
 - [x] **PLAT-04**: Homebrew installation via custom tap
 
+### Web Interface
+
+- [x] **WEB-01**: Static web UI hosted on GitHub Pages (no backend)
+- [x] **WEB-02**: Browser-based HTML↔Markdown conversion using existing converter modules
+- [x] **WEB-03**: Content extraction option in web UI
+
 ### Quality
 
 - [x] **QUAL-01**: Preserve whitespace in code blocks and preformatted text
@@ -133,12 +139,15 @@ Which phases cover which requirements. Updated during roadmap creation.
 | QUAL-03 | Phase 2 | Complete |
 | QUAL-04 | Phase 1 | Complete |
 | QUAL-05 | Phase 1 | Complete |
+| WEB-01 | Phase 10 | Complete |
+| WEB-02 | Phase 10 | Complete |
+| WEB-03 | Phase 10 | Complete |
 
 **Coverage:**
-- v1 requirements: 32 total
-- Mapped to phases: 32
+- v1 requirements: 35 total
+- Mapped to phases: 35
 - Unmapped: 0
 
 ---
 *Requirements defined: 2026-01-22*
-*Last updated: 2026-01-24 after Phase 9 completion*
+*Last updated: 2026-01-24 after Phase 10 completion*

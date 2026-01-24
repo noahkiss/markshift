@@ -21,6 +21,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 7: RTF Pipeline** - RTF to Markdown via HTML intermediate
 - [x] **Phase 8: Content Extraction** - Clean main content extraction from web pages
 - [x] **Phase 9: Platform & Distribution** - Cross-platform support and Homebrew tap
+- [x] **Phase 10: GitHub Pages Web UI** - Browser-based conversion interface hosted on GitHub Pages
 
 ## Phase Details
 
@@ -153,10 +154,26 @@ Plans:
 Plans:
 - [x] 09-01-PLAN.md — Package metadata and Homebrew formula for npm-based distribution
 
+### Phase 10: GitHub Pages Web UI
+**Goal**: Provide a browser-based interface for conversions without installation
+**Depends on**: Phase 2, Phase 3, Phase 8
+**Requirements**: WEB-01, WEB-02, WEB-03
+**Success Criteria** (what must be TRUE):
+  1. User can access web UI at project GitHub Pages URL
+  2. User can paste HTML and receive Markdown (client-side conversion)
+  3. User can paste Markdown and receive HTML (client-side conversion)
+  4. Content extraction option available for cleaning web page HTML
+  5. No backend required - all processing happens in browser
+**Plans**: 2 plans
+
+Plans:
+- [x] 10-01-PLAN.md — Vite build tooling and browser converters
+- [x] 10-02-PLAN.md — Web UI and GitHub Actions deployment
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9
+Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -169,8 +186,9 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9
 | 7. RTF Pipeline | 1/1 | Complete | 2026-01-24 |
 | 8. Content Extraction | 1/1 | Complete | 2026-01-24 |
 | 9. Platform & Distribution | 1/1 | Complete | 2026-01-24 |
+| 10. GitHub Pages Web UI | 2/2 | Complete | 2026-01-24 |
 
 ---
 *Roadmap created: 2026-01-22*
-*Depth: comprehensive (9 phases)*
-*Total v1 requirements: 32*
+*Depth: comprehensive (10 phases)*
+*Total v1 requirements: 35*
