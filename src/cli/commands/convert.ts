@@ -9,6 +9,7 @@ import { readInput, writeOutput } from '../utils/io.js';
 import { createLogger } from '../utils/logger.js';
 import { HtmlToMarkdownConverter } from '../../converters/html-to-markdown/index.js';
 import { MarkdownToHtmlConverter } from '../../converters/markdown-to-html/index.js';
+import { RtfToHtmlConverter } from '../../converters/rtf-to-html/index.js';
 import type { GlobalOptions } from '../types.js';
 import { toJsonOutput } from '../types.js';
 
@@ -34,48 +35,56 @@ export const convertCommand = new Command('convert')
       const inputLength = content.length;
       logger.verbose(`Read ${inputLength} characters of input`);
 
-      // Detect source format (use clipboard format if available, otherwise detect)
-      let sourceFormat: 'html' | 'markdown';
+      // Detect source format (use clipboard format if available, otherwise detect from content)
+      let sourceFormat: 'html' | 'markdown' | 'rtf';
       if (inputResult.sourceFormat) {
-        // From clipboard - handle RTF specially
-        if (inputResult.sourceFormat === 'rtf') {
-          logger.info('RTF detected. RTF-to-Markdown conversion coming in Phase 7. Using plain text for now.');
-          sourceFormat = 'markdown'; // Treat RTF as plain text (will convert to HTML)
-        } else if (inputResult.sourceFormat === 'html') {
-          sourceFormat = 'html';
-        } else {
-          // text format from clipboard - run through content detection
+        // From clipboard - use the format directly, but for 'text' format run content detection
+        if (inputResult.sourceFormat === 'text') {
           const detected = detectFormat(content);
-          sourceFormat = detected === 'html' ? 'html' : 'markdown';
+          sourceFormat = detected === 'html' ? 'html' : detected === 'rtf' ? 'rtf' : 'markdown';
+        } else {
+          sourceFormat = inputResult.sourceFormat;
         }
       } else {
+        // From file or stdin - detect from content
         const detected = detectFormat(content);
-        sourceFormat = detected === 'html' ? 'html' : 'markdown';
+        sourceFormat = detected === 'html' ? 'html' : detected === 'rtf' ? 'rtf' : 'markdown';
       }
       logger.verbose(`Detected format: ${sourceFormat}`);
 
-      // Determine target format
-      let targetFormat: 'md' | 'html';
-      if (options.to) {
-        if (options.to !== 'md' && options.to !== 'html') {
-          command.error(`Invalid target format: ${options.to}. Use 'md' or 'html'.`, { exitCode: 1 });
-          return; // unreachable, but needed for type narrowing
-        }
-        targetFormat = options.to;
-      } else {
-        // Auto-select: html -> md, markdown -> html
-        targetFormat = sourceFormat === 'html' ? 'md' : 'html';
-      }
-      logger.verbose(`Target format: ${targetFormat}`);
-
-      // Convert based on target format
+      // Handle RTF via pipeline (RTF -> HTML -> Markdown)
       let result: string;
-      if (targetFormat === 'md') {
-        const converter = new HtmlToMarkdownConverter();
-        result = converter.convert(content).content;
+      let targetFormat: 'md' | 'html';
+
+      if (sourceFormat === 'rtf') {
+        logger.verbose('Converting via RTF->HTML->Markdown pipeline');
+        const rtfConverter = new RtfToHtmlConverter();
+        const htmlResult = await rtfConverter.convert(content);
+        const mdConverter = new HtmlToMarkdownConverter();
+        result = mdConverter.convert(htmlResult.content).content;
+        targetFormat = 'md';
       } else {
-        const converter = new MarkdownToHtmlConverter();
-        result = converter.convert(content).content;
+        // Determine target format
+        if (options.to) {
+          if (options.to !== 'md' && options.to !== 'html') {
+            command.error(`Invalid target format: ${options.to}. Use 'md' or 'html'.`, { exitCode: 1 });
+            return; // unreachable, but needed for type narrowing
+          }
+          targetFormat = options.to;
+        } else {
+          // Auto-select: html -> md, markdown -> html
+          targetFormat = sourceFormat === 'html' ? 'md' : 'html';
+        }
+        logger.verbose(`Target format: ${targetFormat}`);
+
+        // Convert based on target format
+        if (targetFormat === 'md') {
+          const converter = new HtmlToMarkdownConverter();
+          result = converter.convert(content).content;
+        } else {
+          const converter = new MarkdownToHtmlConverter();
+          result = converter.convert(content).content;
+        }
       }
 
       const processingTimeMs = performance.now() - startTime;
@@ -83,7 +92,7 @@ export const convertCommand = new Command('convert')
 
       // Output result
       if (globalOpts.json) {
-        const sourceFormatName = sourceFormat === 'html' ? 'html' : 'markdown';
+        const sourceFormatName = sourceFormat === 'rtf' ? 'rtf' : sourceFormat === 'html' ? 'html' : 'markdown';
         const targetFormatName = targetFormat === 'md' ? 'markdown' : 'html';
         const jsonOutput = toJsonOutput(
           result,
