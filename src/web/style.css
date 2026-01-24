@@ -227,6 +227,145 @@ textarea::placeholder {
   color: var(--fg);
 }
 
+/* Preview section */
+.preview-section {
+  margin-top: 1.5rem;
+}
+
+.preview-header {
+  margin-bottom: 0.5rem;
+}
+
+.preview-header label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--fg);
+  margin-bottom: 0;
+}
+
+.preview-content {
+  padding: 1.5rem;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  min-height: 150px;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.preview-content .preview-placeholder,
+.preview-content .preview-error {
+  color: var(--fg-muted);
+  font-style: italic;
+  margin: 0;
+}
+
+.preview-content .preview-error {
+  color: var(--error);
+}
+
+/* Rendered markdown styles */
+.preview-content h1,
+.preview-content h2,
+.preview-content h3,
+.preview-content h4,
+.preview-content h5,
+.preview-content h6 {
+  margin-top: 0;
+  margin-bottom: 0.5em;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.preview-content h1 { font-size: 1.75rem; }
+.preview-content h2 { font-size: 1.5rem; }
+.preview-content h3 { font-size: 1.25rem; }
+.preview-content h4 { font-size: 1.1rem; }
+
+.preview-content p {
+  margin: 0 0 1em;
+}
+
+.preview-content p:last-child {
+  margin-bottom: 0;
+}
+
+.preview-content a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.preview-content a:hover {
+  text-decoration: underline;
+}
+
+.preview-content code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  padding: 0.2em 0.4em;
+  background-color: var(--bg);
+  border-radius: 3px;
+}
+
+.preview-content pre {
+  padding: 1rem;
+  background-color: var(--bg);
+  border-radius: var(--radius);
+  overflow-x: auto;
+  margin: 0 0 1em;
+}
+
+.preview-content pre code {
+  padding: 0;
+  background: none;
+}
+
+.preview-content blockquote {
+  margin: 0 0 1em;
+  padding-left: 1rem;
+  border-left: 3px solid var(--border);
+  color: var(--fg-muted);
+}
+
+.preview-content ul,
+.preview-content ol {
+  margin: 0 0 1em;
+  padding-left: 1.5rem;
+}
+
+.preview-content li {
+  margin-bottom: 0.25em;
+}
+
+.preview-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 0 1em;
+}
+
+.preview-content th,
+.preview-content td {
+  padding: 0.5rem;
+  border: 1px solid var(--border);
+  text-align: left;
+}
+
+.preview-content th {
+  background-color: var(--bg);
+  font-weight: 600;
+}
+
+.preview-content img {
+  max-width: 100%;
+  height: auto;
+}
+
+.preview-content hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 1.5em 0;
+}
+
 /* Footer */
 footer {
   margin-top: 2rem;

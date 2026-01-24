@@ -3,6 +3,7 @@ import { htmlToMarkdown, markdownToHtml, extractContent } from './browser-conver
 // DOM Elements
 const htmlPane = document.getElementById('html-pane') as HTMLTextAreaElement;
 const mdPane = document.getElementById('md-pane') as HTMLTextAreaElement;
+const previewEl = document.getElementById('preview') as HTMLDivElement;
 const extractEl = document.getElementById('extract-content') as HTMLInputElement;
 const copyBtns = document.querySelectorAll('.copy-btn') as NodeListOf<HTMLButtonElement>;
 
@@ -44,6 +45,7 @@ function updateMarkdownPane(): void {
 
     const markdown = htmlToMarkdown(htmlContent);
     mdPane.value = markdown;
+    updatePreview();
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Conversion error';
     mdPane.value = `Error: ${message}`;
@@ -76,9 +78,27 @@ function updateHtmlPane(): void {
   }
 }
 
+// Update preview with rendered Markdown
+function updatePreview(): void {
+  const md = mdPane.value.trim();
+  if (!md) {
+    previewEl.innerHTML = '<p class="preview-placeholder">Rendered Markdown will appear here...</p>';
+    return;
+  }
+
+  try {
+    const html = markdownToHtml(md);
+    previewEl.innerHTML = html;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Preview error';
+    previewEl.innerHTML = `<p class="preview-error">Error: ${message}</p>`;
+  }
+}
+
 // Debounced versions for typing
 const debouncedUpdateMarkdown = debounce(updateMarkdownPane, 300);
 const debouncedUpdateHtml = debounce(updateHtmlPane, 300);
+const debouncedUpdatePreview = debounce(updatePreview, 300);
 
 // Handle paste into HTML pane - detect rich text
 function handleHtmlPaste(event: ClipboardEvent): void {
@@ -130,7 +150,10 @@ function showCopyFeedback(btn: HTMLButtonElement): void {
 // Event listeners
 htmlPane.addEventListener('input', debouncedUpdateMarkdown);
 htmlPane.addEventListener('paste', handleHtmlPaste);
-mdPane.addEventListener('input', debouncedUpdateHtml);
+mdPane.addEventListener('input', () => {
+  debouncedUpdateHtml();
+  debouncedUpdatePreview();
+});
 
 copyBtns.forEach(btn => {
   btn.addEventListener('click', handleCopy);
