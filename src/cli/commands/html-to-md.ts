@@ -7,12 +7,8 @@ import { Command } from '@commander-js/extra-typings';
 import { HtmlToMarkdownConverter } from '../../converters/html-to-markdown/index.js';
 import { createLogger } from '../utils/logger.js';
 import { readInput, writeOutput } from '../utils/io.js';
-
-/** Global options from parent command */
-interface GlobalOptions {
-  quiet?: boolean;
-  verbose?: boolean;
-}
+import type { GlobalOptions } from '../types.js';
+import { toJsonOutput } from '../types.js';
 
 /**
  * html-to-md subcommand - Convert HTML to Markdown
@@ -23,21 +19,38 @@ export const htmlToMdCommand = new Command('html-to-md')
   .option('-o, --output <file>', 'output file path (writes to stdout if omitted)')
   .action(async (input, options, command) => {
     const globalOpts = command.optsWithGlobals() as GlobalOptions;
-    const logger = createLogger(globalOpts.quiet, globalOpts.verbose);
+    // JSON mode suppresses log output
+    const logger = createLogger(globalOpts.quiet || globalOpts.json, globalOpts.verbose);
 
     try {
+      const startTime = performance.now();
       logger.verbose('Starting HTML to Markdown conversion');
+
       const html = await readInput(input);
-      logger.verbose(`Read ${html.length} characters of input`);
+      const inputLength = html.length;
+      logger.verbose(`Read ${inputLength} characters of input`);
 
       const converter = new HtmlToMarkdownConverter();
       const result = converter.convert(html);
 
-      logger.verbose(`Converted in ${result.metadata?.processingTimeMs?.toFixed(2)}ms`);
-      await writeOutput(options.output, result.content);
+      const processingTimeMs = performance.now() - startTime;
+      logger.verbose(`Converted in ${processingTimeMs.toFixed(2)}ms`);
 
-      if (options.output) {
-        logger.info(`Written to ${options.output}`);
+      // Output result
+      if (globalOpts.json) {
+        const jsonOutput = toJsonOutput(
+          result.content,
+          'html',
+          'markdown',
+          processingTimeMs,
+          inputLength
+        );
+        process.stdout.write(JSON.stringify(jsonOutput, null, 2) + '\n');
+      } else {
+        await writeOutput(options.output, result.content);
+        if (options.output) {
+          logger.info(`Written to ${options.output}`);
+        }
       }
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);

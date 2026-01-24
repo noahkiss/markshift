@@ -7,6 +7,7 @@ import { Command } from '@commander-js/extra-typings';
 import { VERSION } from '../index.js';
 import { htmlToMdCommand } from './commands/html-to-md.js';
 import { mdToHtmlCommand } from './commands/md-to-html.js';
+import { convertCommand } from './commands/convert.js';
 
 const program = new Command()
   .name('markshift')
@@ -17,6 +18,7 @@ const program = new Command()
   .option('--json', 'output results as JSON (for machine parsing)');
 
 // Add subcommands
+program.addCommand(convertCommand);
 program.addCommand(htmlToMdCommand);
 program.addCommand(mdToHtmlCommand);
 
