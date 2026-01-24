@@ -129,24 +129,26 @@ export function addSemanticTableRule(turndown: TurndownService): void {
       }
 
       // Determine column count from first row
-      const columnCount = tableRows[0].length;
+      const headerRow = tableRows[0]!;
+      const columnCount = headerRow.length;
 
       // Build markdown table
       const lines: string[] = [];
 
       // Header row
-      lines.push('| ' + tableRows[0].join(' | ') + ' |');
+      lines.push('| ' + headerRow.join(' | ') + ' |');
 
       // Separator
       lines.push('| ' + Array(columnCount).fill('---').join(' | ') + ' |');
 
       // Data rows
       for (let i = 1; i < tableRows.length; i++) {
+        const row = tableRows[i]!;
         // Pad row to column count if needed
-        while (tableRows[i].length < columnCount) {
-          tableRows[i].push('');
+        while (row.length < columnCount) {
+          row.push('');
         }
-        lines.push('| ' + tableRows[i].join(' | ') + ' |');
+        lines.push('| ' + row.join(' | ') + ' |');
       }
 
       return '\n\n' + lines.join('\n') + '\n\n';

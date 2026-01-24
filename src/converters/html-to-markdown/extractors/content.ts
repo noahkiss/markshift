@@ -61,7 +61,7 @@ export function extractContent(html: string): ExtractedContent | null {
     }
 
     return {
-      title: result.title,
+      title: result.title || '',
       content: result.content,
       textContent: result.textContent || undefined,
       excerpt: result.excerpt || undefined,

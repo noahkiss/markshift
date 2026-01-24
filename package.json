@@ -8,6 +8,21 @@
   "bin": {
     "markshift": "./dist/cli/index.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/noahkiss/markshift.git"
+  },
+  "bugs": {
+    "url": "https://github.com/noahkiss/markshift/issues"
+  },
+  "homepage": "https://github.com/noahkiss/markshift#readme",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "build": "tsc",
     "cli": "tsx src/cli/index.ts",
