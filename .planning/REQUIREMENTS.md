@@ -24,9 +24,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [ ] **IO-01**: Read input from stdin
 - [ ] **IO-02**: Write output to stdout
-- [ ] **IO-03**: Read from system clipboard (--paste flag)
-- [ ] **IO-04**: Write to system clipboard (--copy flag)
-- [ ] **IO-05**: Read multiple clipboard formats with preference (HTML > RTF > plain text)
+- [x] **IO-03**: Read from system clipboard (--paste flag)
+- [x] **IO-04**: Write to system clipboard (--copy flag)
+- [x] **IO-05**: Read multiple clipboard formats with preference (HTML > RTF > plain text)
 - [ ] **IO-06**: Output JSON format (--json flag) for machine-readable results
 
 ### CLI
@@ -41,9 +41,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Platform Support
 
-- [ ] **PLAT-01**: macOS support (primary platform)
+- [x] **PLAT-01**: macOS support (primary platform)
 - [ ] **PLAT-02**: Linux support (Homebrew works on Linux)
-- [ ] **PLAT-03**: Cross-platform clipboard handling (macOS, Linux)
+- [x] **PLAT-03**: Cross-platform clipboard handling (macOS, Linux)
 - [ ] **PLAT-04**: Homebrew installation via custom tap
 
 ### Quality
@@ -113,9 +113,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CONV-10 | Phase 2 | Complete |
 | IO-01 | Phase 5 | Pending |
 | IO-02 | Phase 5 | Pending |
-| IO-03 | Phase 6 | Pending |
-| IO-04 | Phase 6 | Pending |
-| IO-05 | Phase 6 | Pending |
+| IO-03 | Phase 6 | Complete |
+| IO-04 | Phase 6 | Complete |
+| IO-05 | Phase 6 | Complete |
 | IO-06 | Phase 5 | Pending |
 | CLI-01 | Phase 4 | Complete |
 | CLI-02 | Phase 4 | Complete |
@@ -124,9 +124,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CLI-05 | Phase 4 | Complete |
 | CLI-06 | Phase 4 | Complete |
 | CLI-07 | Phase 8 | Pending |
-| PLAT-01 | Phase 6 | Pending |
+| PLAT-01 | Phase 6 | Complete |
 | PLAT-02 | Phase 9 | Pending |
-| PLAT-03 | Phase 6 | Pending |
+| PLAT-03 | Phase 6 | Complete |
 | PLAT-04 | Phase 9 | Pending |
 | QUAL-01 | Phase 2 | Complete |
 | QUAL-02 | Phase 2 | Complete |
@@ -141,4 +141,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-01-22*
-*Last updated: 2026-01-23 after Phase 4 completion*
+*Last updated: 2026-01-24 after Phase 6 completion*
