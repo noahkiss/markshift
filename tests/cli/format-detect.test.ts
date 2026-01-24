@@ -114,4 +114,34 @@ Some paragraph text.
       expect(detectFormat('Use `<T>` for generics')).toBe('markdown');
     });
   });
+
+  describe('RTF detection', () => {
+    it('detects simple RTF', () => {
+      expect(detectFormat('{\\rtf1 Hello}')).toBe('rtf');
+    });
+
+    it('detects RTF with ANSI encoding', () => {
+      expect(detectFormat('{\\rtf1\\ansi Hello}')).toBe('rtf');
+    });
+
+    it('detects RTF with font tables', () => {
+      const rtf = `{\\rtf1\\ansi\\deff0
+{\\fonttbl{\\f0 Times;}}
+\\pard Hello.\\par}`;
+      expect(detectFormat(rtf)).toBe('rtf');
+    });
+
+    it('detects RTF with leading whitespace', () => {
+      expect(detectFormat('  {\\rtf1 Hello}')).toBe('rtf');
+    });
+
+    it('does NOT detect text that contains rtf-like content mid-string', () => {
+      // Only detect if it STARTS with {\\rtf
+      expect(detectFormat('Hello {\\rtf1 test}')).toBe('markdown');
+    });
+
+    it('does NOT detect partial RTF marker', () => {
+      expect(detectFormat('{\\rt1 Hello}')).toBe('markdown');
+    });
+  });
 });
