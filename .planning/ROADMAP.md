@@ -135,10 +135,10 @@ Plans:
   1. User can use --extract-content flag to get main article content
   2. Navigation, ads, and boilerplate are stripped from output
   3. Semantic div-based structures are converted to proper Markdown tables
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 08-01: Mozilla Readability integration
+- [ ] 08-01-PLAN.md — Content extraction with Readability, semantic table detection, CLI flag
 
 ### Phase 9: Platform & Distribution
 **Goal**: Cross-platform availability and easy installation via Homebrew
