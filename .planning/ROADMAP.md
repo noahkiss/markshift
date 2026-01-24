@@ -109,10 +109,10 @@ Plans:
   3. Multiple clipboard formats are read with preference order (HTML > RTF > text)
   4. Clipboard operations work on macOS
   5. Clipboard operations work on Linux
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 06-01: Clipboard read/write with clipboardy
+- [ ] 06-01-PLAN.md — Clipboard utilities and --paste/--copy global options
 
 ### Phase 7: RTF Pipeline
 **Goal**: Convert RTF content (common in macOS clipboard) to Markdown
