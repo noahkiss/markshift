@@ -8,6 +8,7 @@ import { detectFormat } from '../utils/format-detect.js';
 import { readInput, writeOutput } from '../utils/io.js';
 import { createLogger } from '../utils/logger.js';
 import { HtmlToMarkdownConverter } from '../../converters/html-to-markdown/index.js';
+import { extractContent } from '../../converters/html-to-markdown/extractors/content.js';
 import { MarkdownToHtmlConverter } from '../../converters/markdown-to-html/index.js';
 import { RtfToHtmlConverter } from '../../converters/rtf-to-html/index.js';
 import type { GlobalOptions } from '../types.js';
@@ -21,6 +22,7 @@ export const convertCommand = new Command('convert')
   .argument('[input]', 'input file path (reads from stdin if omitted)')
   .option('-o, --output <file>', 'output file path (writes to stdout if omitted)')
   .option('-t, --to <format>', 'target format: md or html (auto-select if omitted)')
+  .option('--extract-content', 'extract main content from HTML (strip nav/ads/boilerplate)')
   .action(async (input, options, command) => {
     const globalOpts = command.optsWithGlobals() as GlobalOptions;
     // JSON mode suppresses log output
@@ -52,6 +54,21 @@ export const convertCommand = new Command('convert')
       }
       logger.verbose(`Detected format: ${sourceFormat}`);
 
+      // Extract content if requested (HTML only)
+      let contentToConvert = content;
+      if (globalOpts.extractContent && sourceFormat === 'html') {
+        logger.verbose('Extracting main content...');
+        const extracted = extractContent(content);
+        if (extracted) {
+          contentToConvert = extracted.content;
+          logger.verbose(`Extracted: "${extracted.title}" (${extracted.content.length} chars)`);
+        } else {
+          logger.verbose('Content extraction returned null, using original HTML');
+        }
+      } else if (globalOpts.extractContent && sourceFormat !== 'html') {
+        logger.verbose('--extract-content ignored: source is not HTML');
+      }
+
       // Handle RTF via pipeline (RTF -> HTML -> Markdown)
       let result: string;
       let targetFormat: 'md' | 'html';
@@ -60,8 +77,22 @@ export const convertCommand = new Command('convert')
         logger.verbose('Converting via RTF->HTML->Markdown pipeline');
         const rtfConverter = new RtfToHtmlConverter();
         const htmlResult = await rtfConverter.convert(content);
+
+        // Apply content extraction to intermediate HTML if requested
+        let htmlToConvert = htmlResult.content;
+        if (globalOpts.extractContent) {
+          logger.verbose('Extracting main content from RTF->HTML result...');
+          const extracted = extractContent(htmlResult.content);
+          if (extracted) {
+            htmlToConvert = extracted.content;
+            logger.verbose(`Extracted: "${extracted.title}" (${extracted.content.length} chars)`);
+          } else {
+            logger.verbose('Content extraction returned null, using full HTML');
+          }
+        }
+
         const mdConverter = new HtmlToMarkdownConverter();
-        result = mdConverter.convert(htmlResult.content).content;
+        result = mdConverter.convert(htmlToConvert).content;
         targetFormat = 'md';
       } else {
         // Determine target format
@@ -80,10 +111,10 @@ export const convertCommand = new Command('convert')
         // Convert based on target format
         if (targetFormat === 'md') {
           const converter = new HtmlToMarkdownConverter();
-          result = converter.convert(content).content;
+          result = converter.convert(contentToConvert).content;
         } else {
           const converter = new MarkdownToHtmlConverter();
-          result = converter.convert(content).content;
+          result = converter.convert(contentToConvert).content;
         }
       }
 

@@ -18,6 +18,8 @@ export interface GlobalOptions {
   paste?: boolean;
   /** Write output to system clipboard */
   copy?: boolean;
+  /** Extract main content from HTML, stripping nav/ads/boilerplate */
+  extractContent?: boolean;
 }
 
 /**
