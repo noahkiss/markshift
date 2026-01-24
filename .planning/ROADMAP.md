@@ -20,7 +20,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 6: Clipboard Integration** - Read/write system clipboard with format preference
 - [x] **Phase 7: RTF Pipeline** - RTF to Markdown via HTML intermediate
 - [x] **Phase 8: Content Extraction** - Clean main content extraction from web pages
-- [ ] **Phase 9: Platform & Distribution** - Cross-platform support and Homebrew tap
+- [x] **Phase 9: Platform & Distribution** - Cross-platform support and Homebrew tap
 
 ## Phase Details
 
@@ -151,7 +151,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 09-01-PLAN.md — Package metadata and Homebrew formula for npm-based distribution
+- [x] 09-01-PLAN.md — Package metadata and Homebrew formula for npm-based distribution
 
 ## Progress
 
@@ -168,7 +168,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9
 | 6. Clipboard Integration | 1/1 | Complete | 2026-01-24 |
 | 7. RTF Pipeline | 1/1 | Complete | 2026-01-24 |
 | 8. Content Extraction | 1/1 | Complete | 2026-01-24 |
-| 9. Platform & Distribution | 0/1 | Not started | - |
+| 9. Platform & Distribution | 1/1 | Complete | 2026-01-24 |
 
 ---
 *Roadmap created: 2026-01-22*

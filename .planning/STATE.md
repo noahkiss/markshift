@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-22)
 
 **Core value:** Seamless, reliable conversion that fits into existing workflows - no more hunting for converters or manually cleaning up formatting
-**Current focus:** Phase 8 complete, content extraction and semantic tables
+**Current focus:** All v1 phases complete, milestone ready for audit
 
 ## Current Position
 
-Phase: 8 of 9 (Content Extraction) - COMPLETE
+Phase: 9 of 9 (Platform & Distribution) - COMPLETE
 Plan: 1 of 1 in current phase
-Status: Phase complete
-Last activity: 2026-01-24 - Completed 08-01-PLAN.md
+Status: Milestone complete
+Last activity: 2026-01-24 - Completed 09-01-PLAN.md
 
-Progress: [########--] 89% (8/9 phases, 8/9 plans)
+Progress: [##########] 100% (9/9 phases, 9/9 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 8
-- Average duration: 7.5 min
-- Total execution time: 60 min
+- Total plans completed: 9
+- Average duration: 7.2 min
+- Total execution time: 65 min
 
 **By Phase:**
 
@@ -35,9 +35,10 @@ Progress: [########--] 89% (8/9 phases, 8/9 plans)
 | 06-clipboard-integration | 1 | 6 min | 6 min |
 | 07-rtf-pipeline | 1 | 10 min | 10 min |
 | 08-content-extraction | 1 | 8 min | 8 min |
+| 09-platform-distribution | 1 | 5 min | 5 min |
 
 **Recent Trend:**
-- Last 5 plans: 04-01 (9 min), 05-01 (14 min), 06-01 (6 min), 07-01 (10 min), 08-01 (8 min)
+- Last 5 plans: 05-01 (14 min), 06-01 (6 min), 07-01 (10 min), 08-01 (8 min), 09-01 (5 min)
 - Trend: Stable
 
 *Updated after each plan completion*
@@ -75,10 +76,14 @@ Recent decisions affecting current work:
 | Skip isProbablyReaderable() | 08-01 | Doesn't work with linkedom; validate parse result instead |
 | 100 char content threshold | 08-01 | Minimum chars for valid extraction |
 | Try-catch for malformed HTML | 08-01 | Graceful handling returns null |
+| npm registry tarball | 09-01 | Smaller than GitHub tarball, pre-transpiled |
+| std_npm_args helper | 09-01 | Handles cache, prefix, edge cases automatically |
+| Placeholder SHA256 | 09-01 | Can't compute until package is published |
 
 ### Pending Todos
 
-None.
+1. **verify-platform-distribution.md** - npm publish, SHA256 update, brew install test
+2. **verify-clipboard-integration.md** - Phase 6 clipboard testing on fresh system
 
 ### Blockers/Concerns
 
@@ -87,18 +92,19 @@ None.
 ## Session Continuity
 
 Last session: 2026-01-24
-Stopped at: Completed 08-01-PLAN.md (Content Extraction)
+Stopped at: Completed all v1 phases (milestone complete)
 Resume file: None
 
-Phase 8 context (from 08-01-SUMMARY.md):
-- Content extractor at src/converters/html-to-markdown/extractors/content.ts
-- Semantic table rule at src/converters/html-to-markdown/rules/semantic-table.ts
-- Uses @mozilla/readability and linkedom
-- --extract-content CLI flag for clean article extraction
-- 209 total tests passing (17 new in Phase 8)
+Phase 9 context (from 09-01-SUMMARY.md):
+- package.json has all npm publish metadata
+- Homebrew formula at ~/develop/homebrew-tap/Formula/markshift.rb
+- Formula uses std_npm_args, depends on node
+- Linux X11 caveats documented
+- 209 total tests passing (unchanged from Phase 8)
 
-Content extraction complete:
-- `markshift convert --extract-content` - strips nav/ads/boilerplate from HTML
-- ARIA tables with role="table" convert to Markdown tables
-- Extraction applies to RTF->HTML intermediate result too
-- Verbose mode shows extraction details
+Milestone complete:
+- All 9 phases executed successfully
+- 32/32 v1 requirements complete
+- Deferred human verification tracked in todos:
+  - Platform distribution (npm publish + brew install)
+  - Clipboard integration (fresh system test)
