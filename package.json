@@ -37,9 +37,11 @@
   "dependencies": {
     "@crosscopy/clipboard": "^0.2.8",
     "@iarna/rtf-to-html": "^1.1.0",
+    "@mozilla/readability": "^0.6.0",
     "@truto/turndown-plugin-gfm": "^1.0.2",
     "commander": "^14.0.2",
     "is-html": "^3.2.0",
+    "linkedom": "^0.18.12",
     "marked": "^17.0.1",
     "turndown": "^7.2.2"
   }
