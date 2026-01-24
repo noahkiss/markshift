@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-22)
 
 **Core value:** Seamless, reliable conversion that fits into existing workflows - no more hunting for converters or manually cleaning up formatting
-**Current focus:** All v1 phases complete, milestone ready for audit
+**Current focus:** Phase 10 - GitHub Pages Web UI
 
 ## Current Position
 
-Phase: 9 of 9 (Platform & Distribution) - COMPLETE
-Plan: 1 of 1 in current phase
-Status: Milestone complete
-Last activity: 2026-01-24 - Completed 09-01-PLAN.md
+Phase: 10 of 10 (GitHub Pages Web UI) - IN PROGRESS
+Plan: 1 of 2 in current phase
+Status: Plan 10-01 complete
+Last activity: 2026-01-24 - Completed 10-01-PLAN.md
 
-Progress: [##########] 100% (9/9 phases, 9/9 plans)
+Progress: [##########] 91% (10/11 plans complete)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 9
-- Average duration: 7.2 min
-- Total execution time: 65 min
+- Total plans completed: 10
+- Average duration: 7.6 min
+- Total execution time: 76 min
 
 **By Phase:**
 
@@ -36,9 +36,10 @@ Progress: [##########] 100% (9/9 phases, 9/9 plans)
 | 07-rtf-pipeline | 1 | 10 min | 10 min |
 | 08-content-extraction | 1 | 8 min | 8 min |
 | 09-platform-distribution | 1 | 5 min | 5 min |
+| 10-github-pages-web-ui | 1 | 11 min | 11 min |
 
 **Recent Trend:**
-- Last 5 plans: 05-01 (14 min), 06-01 (6 min), 07-01 (10 min), 08-01 (8 min), 09-01 (5 min)
+- Last 5 plans: 06-01 (6 min), 07-01 (10 min), 08-01 (8 min), 09-01 (5 min), 10-01 (11 min)
 - Trend: Stable
 
 *Updated after each plan completion*
@@ -79,11 +80,17 @@ Recent decisions affecting current work:
 | npm registry tarball | 09-01 | Smaller than GitHub tarball, pre-transpiled |
 | std_npm_args helper | 09-01 | Handles cache, prefix, edge cases automatically |
 | Placeholder SHA256 | 09-01 | Can't compute until package is published |
+| Separate web tsconfig | 10-01 | DOM types needed for browser code, excluded from Node build |
+| Empty module alias for linkedom | 10-01 | Browser uses native DOMParser, linkedom is Node-only |
 
 ### Pending Todos
 
 1. **verify-platform-distribution.md** - npm publish, SHA256 update, brew install test
 2. **verify-clipboard-integration.md** - Phase 6 clipboard testing on fresh system
+
+### Roadmap Evolution
+
+- Phase 10 added: GitHub Pages Web UI (browser-based conversion interface)
 
 ### Blockers/Concerns
 
@@ -91,20 +98,18 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-01-24
-Stopped at: Completed all v1 phases (milestone complete)
-Resume file: None
+Last session: 2026-01-24T18:27:15Z
+Stopped at: Completed 10-01-PLAN.md
+Resume file: .planning/phases/10-github-pages-web-ui/10-02-PLAN.md
 
-Phase 9 context (from 09-01-SUMMARY.md):
-- package.json has all npm publish metadata
-- Homebrew formula at ~/develop/homebrew-tap/Formula/markshift.rb
-- Formula uses std_npm_args, depends on node
-- Linux X11 caveats documented
-- 209 total tests passing (unchanged from Phase 8)
+Phase 10 context:
+- Plan 10-01 complete: Vite build tooling and browser converters
+- Next: Plan 10-02 - Web UI implementation with index.html and conversion interface
+- Browser converters ready: htmlToMarkdown, markdownToHtml, extractContent
+- Build output configured to docs/ for GitHub Pages
 
-Milestone complete:
-- All 9 phases executed successfully
-- 32/32 v1 requirements complete
-- Deferred human verification tracked in todos:
-  - Platform distribution (npm publish + brew install)
-  - Clipboard integration (fresh system test)
+Previous phases (1-9) complete:
+- 209 total tests passing
+- 32/32 original requirements complete
+- 3 new WEB requirements added for Phase 10
+- Deferred human verification tracked in todos
