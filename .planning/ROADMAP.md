@@ -122,10 +122,10 @@ Plans:
   1. User can convert RTF content to Markdown
   2. RTF from macOS Notes/Word pastes convert correctly
   3. RTF is processed via RTF->HTML->Markdown pipeline
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 07-01: RTF to HTML converter and pipeline integration
+- [ ] 07-01-PLAN.md — RTF to HTML converter and CLI pipeline integration
 
 ### Phase 8: Content Extraction
 **Goal**: Extract main content from web pages, stripping navigation and ads
