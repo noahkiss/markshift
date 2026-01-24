@@ -16,7 +16,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **CONV-05**: Convert HTML tables to Markdown tables
 - [x] **CONV-06**: Convert Markdown to HTML (bidirectional conversion)
 - [ ] **CONV-07**: Auto-detect input format (HTML vs plain text vs RTF)
-- [ ] **CONV-08**: Convert RTF to Markdown via RTF->HTML->Markdown pipeline
+- [x] **CONV-08**: Convert RTF to Markdown via RTF->HTML->Markdown pipeline
 - [ ] **CONV-09**: Semantic table detection - convert div-based fake tables to markdown tables
 - [x] **CONV-10**: Handle malformed HTML gracefully without crashes
 
@@ -108,7 +108,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CONV-05 | Phase 2 | Complete |
 | CONV-06 | Phase 3 | Complete |
 | CONV-07 | Phase 5 | Pending |
-| CONV-08 | Phase 7 | Pending |
+| CONV-08 | Phase 7 | Complete |
 | CONV-09 | Phase 8 | Pending |
 | CONV-10 | Phase 2 | Complete |
 | IO-01 | Phase 5 | Pending |
@@ -141,4 +141,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-01-22*
-*Last updated: 2026-01-24 after Phase 6 completion*
+*Last updated: 2026-01-24 after Phase 7 completion*
