@@ -15,7 +15,9 @@ const program = new Command()
   .version(VERSION, '-v, --version', 'display version number')
   .option('-q, --quiet', 'suppress all non-essential output')
   .option('-V, --verbose', 'show detailed processing information')
-  .option('--json', 'output results as JSON (for machine parsing)');
+  .option('--json', 'output results as JSON (for machine parsing)')
+  .option('--paste', 'read input from system clipboard')
+  .option('--copy', 'write output to system clipboard');
 
 // Add subcommands
 program.addCommand(convertCommand);

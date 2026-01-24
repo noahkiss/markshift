@@ -1,23 +1,59 @@
 /**
  * I/O utilities for CLI input/output handling
  *
- * Supports reading from stdin/file and writing to stdout/file.
+ * Supports reading from stdin/file/clipboard and writing to stdout/file/clipboard.
  *
  * @packageDocumentation
  */
 import { readFile, writeFile } from 'node:fs/promises';
+import { readClipboard, writeClipboard } from './clipboard.js';
 
 /**
- * Read input from a file or stdin
+ * Options for readInput
+ */
+export interface ReadInputOptions {
+  /** Read from clipboard instead of file/stdin */
+  paste?: boolean;
+}
+
+/**
+ * Result from readInput when using clipboard
+ */
+export interface ReadInputResult {
+  /** The input content */
+  content: string;
+  /** Source format (only set when reading from clipboard) */
+  sourceFormat?: 'html' | 'rtf' | 'text';
+}
+
+/**
+ * Read input from a file, stdin, or clipboard
  *
  * @param inputPath - Path to input file (reads from stdin if omitted)
- * @returns The input content as a string
- * @throws Error if no input provided in TTY mode or file read fails
+ * @param options - Optional settings including paste flag
+ * @returns The input content and optional source format
+ * @throws Error if no input provided in TTY mode, file read fails, or conflicting options
  */
-export async function readInput(inputPath?: string): Promise<string> {
+export async function readInput(
+  inputPath?: string,
+  options?: ReadInputOptions
+): Promise<ReadInputResult> {
+  // Mutual exclusivity check
+  if (options?.paste && inputPath) {
+    throw new Error('Cannot use --paste with file input. Choose one.');
+  }
+
+  // Read from clipboard
+  if (options?.paste) {
+    const result = await readClipboard();
+    return { content: result.content, sourceFormat: result.sourceFormat };
+  }
+
+  // Read from file
   if (inputPath) {
     try {
-      return await readFile(inputPath, 'utf-8');
+      const content = await readFile(inputPath, 'utf-8');
+      return { content };
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       throw new Error(`Failed to read file '${inputPath}': ${message}`);
@@ -29,7 +65,8 @@ export async function readInput(inputPath?: string): Promise<string> {
     throw new Error(
       'No input provided.\n' +
         'Usage: markshift <command> <input-file>\n' +
-        '   or: cat input.html | markshift <command>'
+        '   or: cat input.html | markshift <command>\n' +
+        '   or: markshift <command> --paste'
     );
   }
 
@@ -38,20 +75,42 @@ export async function readInput(inputPath?: string): Promise<string> {
   for await (const chunk of process.stdin) {
     data += chunk;
   }
-  return data;
+  return { content: data };
 }
 
 /**
- * Write output to a file or stdout
+ * Options for writeOutput
+ */
+export interface WriteOutputOptions {
+  /** Write to clipboard instead of file/stdout */
+  copy?: boolean;
+}
+
+/**
+ * Write output to a file, stdout, or clipboard
  *
  * @param outputPath - Path to output file (writes to stdout if omitted)
  * @param content - Content to write
- * @throws Error if file write fails
+ * @param options - Optional settings including copy flag
+ * @throws Error if file write fails or conflicting options
  */
 export async function writeOutput(
   outputPath: string | undefined,
-  content: string
+  content: string,
+  options?: WriteOutputOptions
 ): Promise<void> {
+  // Mutual exclusivity check
+  if (options?.copy && outputPath) {
+    throw new Error('Cannot use --copy with file output. Choose one.');
+  }
+
+  // Write to clipboard
+  if (options?.copy) {
+    await writeClipboard(content);
+    return;
+  }
+
+  // Write to file
   if (outputPath) {
     try {
       await writeFile(outputPath, content, 'utf-8');

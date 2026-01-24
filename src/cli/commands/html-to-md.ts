@@ -26,7 +26,14 @@ export const htmlToMdCommand = new Command('html-to-md')
       const startTime = performance.now();
       logger.verbose('Starting HTML to Markdown conversion');
 
-      const html = await readInput(input);
+      const inputResult = await readInput(input, { paste: globalOpts.paste });
+
+      // Check for RTF content from clipboard
+      if (inputResult.sourceFormat === 'rtf') {
+        throw new Error("RTF content detected. Use 'convert' command or wait for Phase 7.");
+      }
+
+      const html = inputResult.content;
       const inputLength = html.length;
       logger.verbose(`Read ${inputLength} characters of input`);
 
@@ -47,9 +54,11 @@ export const htmlToMdCommand = new Command('html-to-md')
         );
         process.stdout.write(JSON.stringify(jsonOutput, null, 2) + '\n');
       } else {
-        await writeOutput(options.output, result.content);
+        await writeOutput(options.output, result.content, { copy: globalOpts.copy });
         if (options.output) {
           logger.info(`Written to ${options.output}`);
+        } else if (globalOpts.copy) {
+          logger.info('Copied to clipboard');
         }
       }
     } catch (err) {

@@ -29,12 +29,29 @@ export const convertCommand = new Command('convert')
       const startTime = performance.now();
       logger.verbose('Starting auto-detect conversion');
 
-      const content = await readInput(input);
+      const inputResult = await readInput(input, { paste: globalOpts.paste });
+      const content = inputResult.content;
       const inputLength = content.length;
       logger.verbose(`Read ${inputLength} characters of input`);
 
-      // Detect source format
-      const sourceFormat = detectFormat(content);
+      // Detect source format (use clipboard format if available, otherwise detect)
+      let sourceFormat: 'html' | 'markdown';
+      if (inputResult.sourceFormat) {
+        // From clipboard - handle RTF specially
+        if (inputResult.sourceFormat === 'rtf') {
+          logger.info('RTF detected. RTF-to-Markdown conversion coming in Phase 7. Using plain text for now.');
+          sourceFormat = 'markdown'; // Treat RTF as plain text (will convert to HTML)
+        } else if (inputResult.sourceFormat === 'html') {
+          sourceFormat = 'html';
+        } else {
+          // text format from clipboard - run through content detection
+          const detected = detectFormat(content);
+          sourceFormat = detected === 'html' ? 'html' : 'markdown';
+        }
+      } else {
+        const detected = detectFormat(content);
+        sourceFormat = detected === 'html' ? 'html' : 'markdown';
+      }
       logger.verbose(`Detected format: ${sourceFormat}`);
 
       // Determine target format
@@ -77,9 +94,11 @@ export const convertCommand = new Command('convert')
         );
         process.stdout.write(JSON.stringify(jsonOutput, null, 2) + '\n');
       } else {
-        await writeOutput(options.output, result);
+        await writeOutput(options.output, result, { copy: globalOpts.copy });
         if (options.output) {
           logger.info(`Written to ${options.output}`);
+        } else if (globalOpts.copy) {
+          logger.info('Copied to clipboard');
         }
       }
     } catch (err) {

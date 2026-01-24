@@ -14,6 +14,10 @@ export interface GlobalOptions {
   verbose?: boolean;
   /** Output results as JSON (for machine parsing) */
   json?: boolean;
+  /** Read input from system clipboard */
+  paste?: boolean;
+  /** Write output to system clipboard */
+  copy?: boolean;
 }
 
 /**
