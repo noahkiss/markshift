@@ -90,10 +90,40 @@ function handleModeChange(): void {
   }
 }
 
+// Paste handler - extract HTML from clipboard when available
+function handlePaste(event: ClipboardEvent): void {
+  const mode = modeEl.value;
+
+  // Only intercept paste in HTML-to-MD mode
+  if (mode !== 'html-to-md') {
+    return;
+  }
+
+  const clipboardData = event.clipboardData;
+  if (!clipboardData) {
+    return;
+  }
+
+  // Check if HTML is available in clipboard
+  const html = clipboardData.getData('text/html');
+  if (html && html.trim()) {
+    // Prevent default paste behavior
+    event.preventDefault();
+
+    // Insert HTML content into textarea
+    inputEl.value = html;
+
+    // Auto-convert after paste
+    handleSubmit(new Event('submit'));
+  }
+  // If no HTML, let default paste behavior handle plain text
+}
+
 // Event listeners
 form.addEventListener('submit', handleSubmit);
 copyBtn.addEventListener('click', handleCopy);
 modeEl.addEventListener('change', handleModeChange);
+inputEl.addEventListener('paste', handlePaste);
 
 // Initialize state
 handleModeChange();
