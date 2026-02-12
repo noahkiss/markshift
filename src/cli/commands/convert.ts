@@ -18,11 +18,11 @@ import { toJsonOutput } from '../types.js';
  * convert command - Auto-detect format and convert
  */
 export const convertCommand = new Command('convert')
-  .description('Auto-detect format and convert (HTML to Markdown or Markdown to HTML)')
+  .description('Auto-detect input format and convert.\n\nDetects HTML, Markdown, or RTF and converts to the opposite format.\nHTML/RTF → Markdown, Markdown → HTML. Use -t to override.\n\nExamples:\n  echo \'<p>hello</p>\' | markshift convert\n  markshift convert page.html -o page.md\n  markshift convert --paste --copy\n  curl -s https://example.com | markshift convert --extract-content')
   .argument('[input]', 'input file path (reads from stdin if omitted)')
   .option('-o, --output <file>', 'output file path (writes to stdout if omitted)')
-  .option('-t, --to <format>', 'target format: md or html (auto-select if omitted)')
-  .option('--extract-content', 'extract main content from HTML (strip nav/ads/boilerplate)')
+  .option('-t, --to <format>', 'target format: "md" or "html" (auto-detected if omitted)')
+  .option('--extract-content', 'extract main article content, stripping nav/ads/boilerplate')
   .action(async (input, options, command) => {
     const globalOpts = command.optsWithGlobals() as GlobalOptions;
     // JSON mode suppresses log output

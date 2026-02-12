@@ -11,13 +11,13 @@ import { convertCommand } from './commands/convert.js';
 
 const program = new Command()
   .name('markshift')
-  .description('Convert between HTML and Markdown formats')
+  .description('Convert between HTML, Markdown, and rich text formats.\n\nExamples:\n  echo \'<p>hello</p>\' | markshift convert\n  markshift convert --paste --copy\n  markshift html-to-md page.html -o page.md\n  cat README.md | markshift md-to-html --json')
   .version(VERSION, '-v, --version', 'display version number')
   .option('-q, --quiet', 'suppress all non-essential output')
   .option('-V, --verbose', 'show detailed processing information')
-  .option('--json', 'output results as JSON (for machine parsing)')
-  .option('--paste', 'read input from system clipboard')
-  .option('--copy', 'write output to system clipboard');
+  .option('--json', 'output structured JSON with content and metadata')
+  .option('--paste', 'read input from system clipboard (HTML > RTF > text)')
+  .option('--copy', 'write converted output to system clipboard');
 
 // Add subcommands
 program.addCommand(convertCommand);

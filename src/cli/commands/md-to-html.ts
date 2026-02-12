@@ -14,7 +14,7 @@ import { toJsonOutput } from '../types.js';
  * md-to-html subcommand - Convert Markdown to HTML
  */
 export const mdToHtmlCommand = new Command('md-to-html')
-  .description('Convert Markdown to HTML')
+  .description('Convert Markdown to HTML.\n\nRenders CommonMark + GFM (tables, strikethrough, task lists, autolinks).\nOutput is HTML suitable for pasting into email, Teams, or web editors.\n\nExamples:\n  markshift md-to-html README.md\n  markshift md-to-html doc.md -o doc.html\n  echo "**bold**" | markshift md-to-html\n  markshift md-to-html --paste --copy')
   .argument('[input]', 'input file path (reads from stdin if omitted)')
   .option('-o, --output <file>', 'output file path (writes to stdout if omitted)')
   .action(async (input, options, command) => {
@@ -30,7 +30,7 @@ export const mdToHtmlCommand = new Command('md-to-html')
 
       // Check for RTF content from clipboard
       if (inputResult.sourceFormat === 'rtf') {
-        throw new Error("RTF content detected. Use 'convert' command or wait for Phase 7.");
+        throw new Error("RTF content detected. Use 'markshift convert' which handles RTF automatically.");
       }
 
       const markdown = inputResult.content;
