@@ -17,4 +17,4 @@ export { HtmlToMarkdownConverter } from './converters/html-to-markdown/index.js'
 export { MarkdownToHtmlConverter } from './converters/markdown-to-html/index.js';
 
 // Version
-export const VERSION = '0.0.1';
+export const VERSION = '1.0.0';

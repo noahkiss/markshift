@@ -1,116 +1,72 @@
-# text-transform
+# markshift
 
-A comprehensive suite of tools for converting text to and from Markdown format.
+Convert between HTML, Markdown, and rich text formats. CLI tool with clipboard integration and content extraction.
 
-## Vision
+## Install
 
-text-transform aims to be the universal translator for text content, making it easy to:
-- Convert web pages to clean, readable Markdown
-- Extract conversations from chat platforms (Slack, Teams) into archivable Markdown
-- Transform Confluence pages and Jira issues into portable documentation
-- Convert between rich text formats and Markdown
-- Process any webpage intelligently through a simple URL proxy
-- Transform clipboard content on-the-fly for seamless workflows
-
-**Design Philosophy**: Maximum accessibility through multiple entry and exit points - CLI, web service, clipboard, automation tools, and API integrations.
-
-## Features (Planned)
-
-### 🖥️ CLI Tool
 ```bash
-# Convert a webpage to markdown
-text-transform url https://example.com/article -o article.md
-
-# Convert HTML file to markdown
-text-transform html input.html -o output.md
-
-# Convert markdown to HTML
-text-transform markdown input.md -o output.html
-
-# Process with smart detection
-text-transform smart https://github.com/user/repo/issues/123
-
-# Process clipboard content (reads from clipboard, outputs markdown)
-text-transform clipboard
-
-# Process clipboard and copy result back to clipboard
-text-transform clipboard --copy
-
-# Process clipboard with specific processor
-text-transform clipboard --smart github
+brew install noahkiss/tap/markshift
 ```
 
-### 📋 Clipboard & Integration Support
-- **Direct clipboard processing**: Read from and write to system clipboard
-- **Alfred/Raycast workflows**: Trigger conversions via hotkeys or keywords
-- **iOS Shortcuts**: Share sheet integration for mobile workflows
-- **Automation-friendly**: Designed for scripting and agent integration
-- **Watch mode**: Monitor clipboard for automatic conversions
-- **Format detection**: Automatically detect and process HTML, RTF, or URLs in clipboard
+Or run from source:
 
-### 🌐 Web Service
-- Simple web interface for one-off conversions
-- REST API for integration with other tools
-- URL proxy endpoint: `https://mydomain.com/[https://target-site.com/page]`
-
-### 🎯 Smart Processors
-Site-specific processors that understand the structure of common platforms:
-- **GitHub**: Issues, PRs, discussions, README files
-- **Confluence**: Pages, spaces, attachments
-- **Jira**: Issues, comments, project pages
-- **Stack Overflow**: Questions and answers
-- **Medium/Substack**: Articles with proper attribution
-- **Reddit**: Threads and comments
-- **Documentation sites**: Intelligent content extraction
-
-### 🔄 Supported Conversions
-- HTML → Markdown
-- Markdown → HTML
-- Rich Text (RTF) → Markdown
-- Slack export → Markdown
-- Teams chat → Markdown
-- Confluence → Markdown
-- Jira → Markdown
-- Email (MIME) → Markdown
-
-## Architecture
-
-```
-text-transform/
-├── cmd/
-│   ├── cli/          # Command-line interface
-│   └── server/       # Web service
-├── pkg/
-│   ├── converters/   # Format converters
-│   │   ├── html/
-│   │   ├── markdown/
-│   │   ├── slack/
-│   │   └── ...
-│   ├── smart/        # Smart processors for specific sites
-│   │   ├── github/
-│   │   ├── confluence/
-│   │   └── ...
-│   ├── clipboard/    # Clipboard handling (cross-platform)
-│   ├── fetcher/      # URL fetching and preprocessing
-│   └── registry/     # Converter registration and discovery
-├── internal/
-│   └── ...           # Internal packages
-└── web/
-    └── ...           # Web UI assets
+```bash
+git clone https://github.com/noahkiss/markshift.git
+cd markshift
+npm install && npm run build
+npm link  # makes `markshift` available globally
 ```
 
-## Development Status
+## Usage
 
-🚧 **Early Development** - This project is currently in the bootstrap phase.
+```bash
+# Auto-detect format and convert
+echo '<p>hello <strong>world</strong></p>' | markshift convert
 
-## Getting Started
+# Explicit direction
+markshift html-to-md < page.html > page.md
+markshift md-to-html < doc.md > doc.html
 
-*(Coming soon)*
+# Clipboard: read, convert, write back
+markshift convert --paste --copy
 
-## Contributing
+# Extract main content from noisy HTML (strips nav, ads, boilerplate)
+markshift convert --extract-content < page.html
 
-*(Coming soon)*
+# JSON output for scripting
+echo '**bold**' | markshift convert --json
+```
+
+### Commands
+
+| Command | Description |
+|---------|-------------|
+| `convert` | Auto-detect format and convert (default) |
+| `html-to-md` | HTML to Markdown |
+| `md-to-html` | Markdown to HTML |
+
+### Flags
+
+| Flag | Description |
+|------|-------------|
+| `--paste` | Read input from system clipboard |
+| `--copy` | Write output to system clipboard |
+| `--extract-content` | Extract main content (Readability) |
+| `--json` | Structured JSON output |
+| `-q, --quiet` | Suppress non-essential output |
+| `-V, --verbose` | Detailed processing info |
+
+## Web UI
+
+Try it in the browser at [noahkiss.github.io/markshift](https://noahkiss.github.io/markshift/).
+
+## Supported Formats
+
+- **HTML to Markdown** -- GFM tables, task lists, strikethrough, code blocks with language hints
+- **Markdown to HTML** -- Full CommonMark + GFM rendering
+- **RTF to Markdown** -- Via HTML intermediate (handles macOS clipboard RTF)
+- **Content extraction** -- Mozilla Readability-based, with semantic table detection
 
 ## License
 
-*(To be determined)*
+MIT

@@ -43,7 +43,10 @@ const MIN_CONTENT_LENGTH = 100;
 export function extractContent(html: string): ExtractedContent | null {
   try {
     // Parse HTML with linkedom
-    const { document } = parseHTML(html);
+    // linkedom's parseHTML exposes `document` via getter but the types don't declare it
+    const parsed = parseHTML(html);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const document = (parsed as any).document;
 
     // Try to extract content with Readability
     // Note: We skip isProbablyReaderable() as it doesn't work well with linkedom's DOM

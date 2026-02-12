@@ -1,48 +1,48 @@
-# Binaries for programs and plugins
-*.exe
-*.exe~
-*.dll
-*.so
-*.dylib
-
-# Test binary, built with `go test -c`
-*.test
-
-# Output of the go coverage tool
-*.out
-
-# Go workspace file
-go.work
-go.work.sum
-
 # Build output
-/bin/
 /dist/
 /build/
 
-# IDE and editor files
+# Dependencies
+node_modules/
+
+# Web UI build (committed for GitHub Pages)
+# docs/
+
+# npm pack output
+*.tgz
+
+# TypeScript
+*.tsbuildinfo
+
+# Test / coverage
+coverage/
+*.lcov
+.nyc_output/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# IDE
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
+
+# OS
 .DS_Store
 
-# Dependency directories
-/vendor/
+# Logs
+*.log
+npm-debug.log*
 
-# Environment files
-.env
-.env.local
-.env.*.local
+# Vite
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+.vite/
 
-# Temporary files
+# Temp
 /tmp/
 *.tmp
-
-# Log files
-*.log
-
-# Output files from conversions (for testing)
-/test-output/
-/examples/output/
