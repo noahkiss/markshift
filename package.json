@@ -1,6 +1,6 @@
 {
   "name": "markshift",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A suite of tools for converting text to and from Markdown format",
   "type": "module",
   "main": "dist/index.js",
