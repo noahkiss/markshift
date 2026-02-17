@@ -2,12 +2,6 @@
 /dist/
 /build/
 
-# Dependencies
-node_modules/
-
-# Web UI build (committed for GitHub Pages)
-# docs/
-
 # npm pack output
 *.tgz
 
@@ -19,20 +13,8 @@ coverage/
 *.lcov
 .nyc_output/
 
-# Environment
-.env
-.env.*
-!.env.example
-
 # IDE
 .vscode/
-.idea/
-*.swp
-*.swo
-*~
-
-# OS
-.DS_Store
 
 # Logs
 *.log
