@@ -34,7 +34,7 @@ markshift md-to-html doc.md -o doc.html
 
 ### `convert` -- Auto-detect and convert
 
-The `convert` command detects whether input is HTML, Markdown, or RTF and converts to the opposite format (HTML/RTF to Markdown, Markdown to HTML).
+The `convert` command detects whether input is HTML, Markdown, RTF, CSV/TSV, or JSON and converts to the appropriate format.
 
 ```bash
 # From stdin
@@ -43,12 +43,25 @@ echo '<h1>Title</h1><p>Body text</p>' | markshift convert
 # From file
 markshift convert page.html -o page.md
 
-# Force target format (skip auto-detection)
-markshift convert notes.txt -t md
-markshift convert notes.txt -t html
+# Force target format
+markshift convert notes.txt --to md
+markshift convert notes.txt --to html
+markshift convert data.md --to csv
+
+# Fetch a URL and convert to Markdown
+markshift convert --url https://example.com/article
 
 # Extract main content from a full web page (strips nav, ads, sidebars)
 curl -s https://example.com | markshift convert --extract-content
+
+# Clean messy HTML (Excel, web) via round-trip
+markshift convert --paste --copy --to html
+
+# Wrap clipboard code in a fenced block with language detection
+markshift convert --paste --copy --to code
+
+# Strip all formatting to plain text
+markshift convert --paste --copy --to text
 ```
 
 ### `html-to-md` -- HTML to Markdown
@@ -146,10 +159,55 @@ All informational output (verbose, status messages) goes to stderr, keeping stdo
 
 | From | To | Notes |
 |------|----|-------|
-| HTML | Markdown | GFM tables, task lists, strikethrough, fenced code with language hints |
-| Markdown | HTML | CommonMark + GFM (tables, strikethrough, task lists, autolinks) |
+| HTML | Markdown | GFM tables, task lists, strikethrough, fenced code with language hints, Confluence support |
+| Markdown | HTML | CommonMark + GFM (tables, strikethrough, task lists, autolinks). Writes HTML clipboard type for rich text pasting |
 | RTF | Markdown | Via RTF -> HTML -> Markdown pipeline. Handles macOS clipboard RTF from Word, Notes, etc. |
+| CSV/TSV | Markdown | Auto-detects delimiter (tabs vs commas), handles quoted fields |
+| JSON | Markdown | Arrays of objects -> table, single objects -> key/value table |
+| Markdown | CSV | Extracts first GFM table, outputs CSV with proper quoting |
+| HTML | HTML | Round-trip cleanup (`--to html`): cleans messy Excel/web HTML |
+| Any | Plain text | `--to text`: strips all HTML tags and Markdown formatting |
+| Any | Code block | `--to code`: wraps in fenced markdown with auto-detected language |
 | Web page HTML | Markdown | With `--extract-content`: Readability-based extraction + semantic table detection |
+| URL | Markdown | With `--url`: fetches page and extracts content |
+
+### Confluence Support
+
+Confluence HTML (both rendered pages copied from the browser and storage format XML from the API) is handled automatically. Panels become blockquotes, status lozenges become inline code, code blocks preserve language hints, and TOC macros are stripped.
+
+## Raycast Integration
+
+Raycast scripts are included in `scripts/raycast/` for one-keystroke clipboard conversion on macOS.
+
+### Setup
+
+1. Install markshift (`brew install noahkiss/tap/markshift` or standalone bundle)
+2. In Raycast, go to Extensions > Script Commands > Add Script Directory
+3. Point it to the `scripts/raycast/` folder (or copy the scripts to your own script directory)
+
+### Included Scripts
+
+| Script | Hotkey suggestion | What it does |
+|--------|-------------------|--------------|
+| **Convert Clipboard** | `⌥⇧V` | Auto-detect format and convert (rich text -> markdown, markdown -> HTML, CSV -> table) |
+| **Table to CSV** | `⌥⇧C` | Convert a markdown table in clipboard to CSV |
+| **Clean & Paste Rich** | `⌥⇧H` | Clean messy HTML (from Excel, web) into paste-ready rich text |
+
+Each script runs silently -- it reads your clipboard, converts, and writes the result back. Just paste after.
+
+## Standalone Bundle
+
+For a single-file CLI with no dependencies (beyond Node.js):
+
+```bash
+# Build to a custom location
+node build-bundle.mjs ~/bin/markshift
+
+# Or use the npm script
+npm run build:install  # builds to ~/bin/markshift
+```
+
+The bundle is ~1.9MB and works anywhere with Node.js 20+.
 
 ## Web UI
 
