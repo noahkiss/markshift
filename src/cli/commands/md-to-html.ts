@@ -54,11 +54,11 @@ export const mdToHtmlCommand = new Command('md-to-html')
         );
         process.stdout.write(JSON.stringify(jsonOutput, null, 2) + '\n');
       } else {
-        await writeOutput(options.output, result.content, { copy: globalOpts.copy });
+        await writeOutput(options.output, result.content, { copy: globalOpts.copy, outputFormat: 'html' });
         if (options.output) {
           logger.info(`Written to ${options.output}`);
         } else if (globalOpts.copy) {
-          logger.info('Copied to clipboard');
+          logger.info('Copied to clipboard (as rich text)');
         }
       }
     } catch (err) {

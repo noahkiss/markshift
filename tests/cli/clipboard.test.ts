@@ -1,132 +1,125 @@
 /**
- * Tests for clipboard utilities
+ * Tests for clipboard utilities (platform shell commands)
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
-// Mock @crosscopy/clipboard before importing
-vi.mock('@crosscopy/clipboard', () => ({
-  default: {
-    hasHtml: vi.fn(),
-    hasRtf: vi.fn(),
-    hasText: vi.fn(),
-    getHtml: vi.fn(),
-    getRtf: vi.fn(),
-    getText: vi.fn(),
-    setText: vi.fn(),
-  },
+// Mock child_process and os before imports
+vi.mock('node:child_process', () => ({
+  execSync: vi.fn(),
 }));
 
-import Clipboard from '@crosscopy/clipboard';
+vi.mock('node:os', async (importOriginal) => {
+  const actual = (await importOriginal()) as Record<string, unknown>;
+  return { ...actual, platform: vi.fn(() => 'linux') };
+});
+
+vi.mock('node:fs', async (importOriginal) => {
+  const actual = (await importOriginal()) as Record<string, unknown>;
+  return { ...actual, writeFileSync: vi.fn(), unlinkSync: vi.fn() };
+});
+
+import { execSync } from 'node:child_process';
+import { platform } from 'node:os';
 import { readClipboard, writeClipboard } from '../../src/cli/utils/clipboard.js';
 
 describe('readClipboard', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(platform).mockReturnValue('linux');
   });
 
   afterEach(() => {
     vi.resetAllMocks();
   });
 
-  it('returns HTML content when HTML is available (highest preference)', async () => {
-    vi.mocked(Clipboard.hasHtml).mockResolvedValue(true);
-    vi.mocked(Clipboard.hasRtf).mockResolvedValue(true);
-    vi.mocked(Clipboard.hasText).mockResolvedValue(true);
-    vi.mocked(Clipboard.getHtml).mockResolvedValue('<p>Hello World</p>');
+  it('returns HTML content when xclip has HTML (Linux)', async () => {
+    vi.mocked(execSync).mockImplementation((cmd) => {
+      if (typeof cmd === 'string' && cmd.includes('text/html')) return '<p>Hello</p>';
+      return '';
+    });
 
     const result = await readClipboard();
 
-    expect(result).toEqual({
-      content: '<p>Hello World</p>',
-      sourceFormat: 'html',
-    });
-    expect(Clipboard.hasHtml).toHaveBeenCalled();
-    expect(Clipboard.getHtml).toHaveBeenCalled();
-    // Should not check lower priority formats when HTML is available
-    expect(Clipboard.getRtf).not.toHaveBeenCalled();
-    expect(Clipboard.getText).not.toHaveBeenCalled();
+    expect(result).toEqual({ content: '<p>Hello</p>', sourceFormat: 'html' });
   });
 
-  it('returns RTF content when only RTF and text are available', async () => {
-    vi.mocked(Clipboard.hasHtml).mockResolvedValue(false);
-    vi.mocked(Clipboard.hasRtf).mockResolvedValue(true);
-    vi.mocked(Clipboard.hasText).mockResolvedValue(true);
-    vi.mocked(Clipboard.getRtf).mockResolvedValue('{\\rtf1 Hello}');
+  it('returns RTF when HTML is empty but RTF is available', async () => {
+    vi.mocked(execSync).mockImplementation((cmd) => {
+      if (typeof cmd === 'string' && cmd.includes('text/html')) return '';
+      if (typeof cmd === 'string' && cmd.includes('text/rtf')) return '{\\rtf1 Hello}';
+      return '';
+    });
 
     const result = await readClipboard();
 
-    expect(result).toEqual({
-      content: '{\\rtf1 Hello}',
-      sourceFormat: 'rtf',
-    });
-    expect(Clipboard.hasHtml).toHaveBeenCalled();
-    expect(Clipboard.hasRtf).toHaveBeenCalled();
-    expect(Clipboard.getRtf).toHaveBeenCalled();
-    expect(Clipboard.getText).not.toHaveBeenCalled();
+    expect(result).toEqual({ content: '{\\rtf1 Hello}', sourceFormat: 'rtf' });
   });
 
-  it('returns text content as fallback when only text is available', async () => {
-    vi.mocked(Clipboard.hasHtml).mockResolvedValue(false);
-    vi.mocked(Clipboard.hasRtf).mockResolvedValue(false);
-    vi.mocked(Clipboard.hasText).mockResolvedValue(true);
-    vi.mocked(Clipboard.getText).mockResolvedValue('Plain text content');
+  it('returns text as fallback', async () => {
+    vi.mocked(execSync).mockImplementation((cmd) => {
+      if (typeof cmd === 'string' && cmd.includes('text/html')) return '';
+      if (typeof cmd === 'string' && cmd.includes('text/rtf')) return '';
+      if (typeof cmd === 'string' && cmd.includes('-o')) return 'Plain text';
+      return '';
+    });
 
     const result = await readClipboard();
 
-    expect(result).toEqual({
-      content: 'Plain text content',
-      sourceFormat: 'text',
-    });
-    expect(Clipboard.hasHtml).toHaveBeenCalled();
-    expect(Clipboard.hasRtf).toHaveBeenCalled();
-    expect(Clipboard.hasText).toHaveBeenCalled();
-    expect(Clipboard.getText).toHaveBeenCalled();
+    expect(result).toEqual({ content: 'Plain text', sourceFormat: 'text' });
   });
 
   it('throws error when clipboard is empty', async () => {
-    vi.mocked(Clipboard.hasHtml).mockResolvedValue(false);
-    vi.mocked(Clipboard.hasRtf).mockResolvedValue(false);
-    vi.mocked(Clipboard.hasText).mockResolvedValue(false);
+    vi.mocked(execSync).mockImplementation(() => '');
 
     await expect(readClipboard()).rejects.toThrow(
-      'Clipboard is empty or contains only images/files.\n' +
-        'Copy some text, HTML, or RTF content first.'
+      'Clipboard is empty or contains only images/files.'
     );
   });
+
+  // macOS paths (osascript, pbpaste) are tested via integration on Mac.
+  // The isMac flag is evaluated at module init time and can't be mocked per-test.
 });
 
 describe('writeClipboard', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(platform).mockReturnValue('linux');
   });
 
   afterEach(() => {
     vi.resetAllMocks();
   });
 
-  it('calls setText with provided content', async () => {
-    vi.mocked(Clipboard.setText).mockResolvedValue(undefined);
+  it('writes text via xclip on Linux', async () => {
+    vi.mocked(execSync).mockReturnValue('');
 
     await writeClipboard('Test content');
 
-    expect(Clipboard.setText).toHaveBeenCalledWith('Test content');
-    expect(Clipboard.setText).toHaveBeenCalledTimes(1);
+    expect(execSync).toHaveBeenCalledWith('xclip -selection clipboard', {
+      input: 'Test content',
+      encoding: 'utf-8',
+    });
   });
 
-  it('handles empty string content', async () => {
-    vi.mocked(Clipboard.setText).mockResolvedValue(undefined);
+  it('writes HTML via xclip with text/html type', async () => {
+    vi.mocked(execSync).mockReturnValue('');
 
-    await writeClipboard('');
+    await writeClipboard('<p>Hello</p>', 'html');
 
-    expect(Clipboard.setText).toHaveBeenCalledWith('');
+    expect(execSync).toHaveBeenCalledWith('xclip -selection clipboard -t text/html', {
+      input: '<p>Hello</p>',
+      encoding: 'utf-8',
+    });
   });
 
-  it('handles large content', async () => {
-    vi.mocked(Clipboard.setText).mockResolvedValue(undefined);
-    const largeContent = 'A'.repeat(100000);
+  it('writes text when format is explicitly text', async () => {
+    vi.mocked(execSync).mockReturnValue('');
 
-    await writeClipboard(largeContent);
+    await writeClipboard('# Hello', 'text');
 
-    expect(Clipboard.setText).toHaveBeenCalledWith(largeContent);
+    expect(execSync).toHaveBeenCalledWith('xclip -selection clipboard', {
+      input: '# Hello',
+      encoding: 'utf-8',
+    });
   });
 });

@@ -1,11 +1,17 @@
 /**
- * Clipboard utilities for reading/writing system clipboard
+ * Clipboard utilities using platform commands
  *
- * Supports multiple formats (HTML, RTF, text) with preference order.
+ * macOS: pbcopy/pbpaste for text, osascript+AppKit for HTML/RTF
+ * Linux: xclip for all formats
  *
  * @packageDocumentation
  */
-import Clipboard from '@crosscopy/clipboard';
+import { execSync } from 'node:child_process';
+import { writeFileSync, unlinkSync } from 'node:fs';
+import { join } from 'node:path';
+import { tmpdir, platform } from 'node:os';
+
+const isMac = platform() === 'darwin';
 
 /**
  * Result of reading from clipboard
@@ -17,6 +23,68 @@ export interface ClipboardContent {
   sourceFormat: 'html' | 'rtf' | 'text';
 }
 
+function exec(cmd: string): string {
+  try {
+    return execSync(cmd, { encoding: 'utf-8', maxBuffer: 10 * 1024 * 1024 });
+  } catch {
+    return '';
+  }
+}
+
+/** Run osascript via stdin to avoid all escaping issues */
+function osascript(script: string): string {
+  try {
+    return execSync('osascript', {
+      input: script,
+      encoding: 'utf-8',
+      maxBuffer: 10 * 1024 * 1024,
+    }).trim();
+  } catch {
+    return '';
+  }
+}
+
+function readHtml(): string {
+  if (isMac) {
+    return osascript(`
+use framework "AppKit"
+set pb to current application's NSPasteboard's generalPasteboard()
+set html to pb's stringForType:"public.html"
+if html is missing value then
+  return ""
+else
+  return html as text
+end if
+`);
+  }
+  return exec('xclip -selection clipboard -t text/html -o 2>/dev/null');
+}
+
+function readRtf(): string {
+  if (isMac) {
+    return osascript(`
+use framework "AppKit"
+set pb to current application's NSPasteboard's generalPasteboard()
+set rtfData to pb's dataForType:"public.rtf"
+if rtfData is missing value then
+  return ""
+else
+  set rtfStr to (current application's NSString's alloc()'s initWithData:rtfData encoding:(current application's NSUTF8StringEncoding))
+  if rtfStr is missing value then return ""
+  return rtfStr as text
+end if
+`);
+  }
+  return exec('xclip -selection clipboard -t text/rtf -o 2>/dev/null');
+}
+
+function readText(): string {
+  if (isMac) {
+    return exec('pbpaste 2>/dev/null');
+  }
+  return exec('xclip -selection clipboard -o 2>/dev/null');
+}
+
 /**
  * Read content from system clipboard with format preference
  *
@@ -26,20 +94,19 @@ export interface ClipboardContent {
  * @throws Error if clipboard is empty or contains only images/files
  */
 export async function readClipboard(): Promise<ClipboardContent> {
-  // Check formats in preference order: HTML > RTF > text
-  if (await Clipboard.hasHtml()) {
-    const content = await Clipboard.getHtml();
-    return { content, sourceFormat: 'html' };
+  const html = readHtml();
+  if (html.trim()) {
+    return { content: html, sourceFormat: 'html' };
   }
 
-  if (await Clipboard.hasRtf()) {
-    const content = await Clipboard.getRtf();
-    return { content, sourceFormat: 'rtf' };
+  const rtf = readRtf();
+  if (rtf.trim()) {
+    return { content: rtf, sourceFormat: 'rtf' };
   }
 
-  if (await Clipboard.hasText()) {
-    const content = await Clipboard.getText();
-    return { content, sourceFormat: 'text' };
+  const text = readText();
+  if (text) {
+    return { content: text, sourceFormat: 'text' };
   }
 
   throw new Error(
@@ -49,10 +116,42 @@ export async function readClipboard(): Promise<ClipboardContent> {
 }
 
 /**
- * Write content to system clipboard as plain text
+ * Write content to system clipboard
+ *
+ * When format is 'html', sets the HTML clipboard type so rich-text apps
+ * (Teams, Word, email) paste formatted content. Also sets a plain text
+ * fallback for text-only apps.
  *
  * @param content - Content to write to clipboard
+ * @param format - Output format: 'html' sets HTML clipboard type, 'text' (default) sets plain text
  */
-export async function writeClipboard(content: string): Promise<void> {
-  await Clipboard.setText(content);
+export async function writeClipboard(content: string, format?: 'html' | 'text'): Promise<void> {
+  if (format === 'html') {
+    if (isMac) {
+      // Write to temp file so osascript can read it (avoids escaping)
+      const tmpFile = join(tmpdir(), `markshift-${process.pid}.html`);
+      writeFileSync(tmpFile, content, 'utf-8');
+      try {
+        osascript(`
+use framework "AppKit"
+use framework "Foundation"
+set htmlContent to (current application's NSString's stringWithContentsOfFile:"${tmpFile}" encoding:(current application's NSUTF8StringEncoding) |error|:(missing value))
+set pb to current application's NSPasteboard's generalPasteboard()
+pb's clearContents()
+pb's setString:htmlContent forType:"public.html"
+pb's setString:htmlContent forType:"public.utf8-plain-text"
+`);
+      } finally {
+        try { unlinkSync(tmpFile); } catch {}
+      }
+    } else {
+      execSync('xclip -selection clipboard -t text/html', { input: content, encoding: 'utf-8' });
+    }
+  } else {
+    if (isMac) {
+      execSync('pbcopy', { input: content, encoding: 'utf-8' });
+    } else {
+      execSync('xclip -selection clipboard', { input: content, encoding: 'utf-8' });
+    }
+  }
 }

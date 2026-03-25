@@ -84,6 +84,8 @@ export async function readInput(
 export interface WriteOutputOptions {
   /** Write to clipboard instead of file/stdout */
   copy?: boolean;
+  /** Output format hint for clipboard - 'html' writes as rich text */
+  outputFormat?: 'html' | 'text';
 }
 
 /**
@@ -106,7 +108,7 @@ export async function writeOutput(
 
   // Write to clipboard
   if (options?.copy) {
-    await writeClipboard(content);
+    await writeClipboard(content, options.outputFormat);
     return;
   }
 

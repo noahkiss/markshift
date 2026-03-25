@@ -74,7 +74,15 @@ describe('writeOutput', () => {
 
     await writeOutput(undefined, 'Markdown content', { copy: true });
 
-    expect(writeClipboard).toHaveBeenCalledWith('Markdown content');
+    expect(writeClipboard).toHaveBeenCalledWith('Markdown content', undefined);
+  });
+
+  it('passes outputFormat to writeClipboard when copying HTML', async () => {
+    vi.mocked(writeClipboard).mockResolvedValue(undefined);
+
+    await writeOutput(undefined, '<p>Hello</p>', { copy: true, outputFormat: 'html' });
+
+    expect(writeClipboard).toHaveBeenCalledWith('<p>Hello</p>', 'html');
   });
 
   it('does not write to stdout when copy option is true', async () => {

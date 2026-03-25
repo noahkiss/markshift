@@ -9,6 +9,7 @@ import type { ConvertOptions, ConvertResult, Format } from '../../types/index.js
 import type { Converter } from '../index.js';
 import { addCodeLanguageRule } from './rules/code-language.js';
 import { addSemanticTableRule } from './rules/semantic-table.js';
+import { addConfluenceRules } from './rules/confluence.js';
 
 /**
  * Converts HTML to Markdown using turndown with GFM plugin
@@ -46,6 +47,9 @@ export class HtmlToMarkdownConverter implements Converter {
 
     // Add custom rule for semantic/ARIA tables (div-based tables)
     addSemanticTableRule(this.turndown);
+
+    // Add Confluence-specific rules (rendered HTML and storage format)
+    addConfluenceRules(this.turndown);
   }
 
   convert(input: string, _options?: ConvertOptions): ConvertResult {

@@ -7,7 +7,7 @@
 /**
  * Supported format identifiers
  */
-export type Format = 'html' | 'markdown' | 'rtf' | 'jira' | 'text';
+export type Format = 'html' | 'markdown' | 'rtf' | 'csv' | 'json' | 'jira' | 'text';
 
 /**
  * A format pair identifier like "html->markdown"
@@ -17,7 +17,7 @@ export type FormatPair = `${Format}->${Format}`;
 /**
  * Valid format values for runtime checking
  */
-const VALID_FORMATS: ReadonlyArray<Format> = ['html', 'markdown', 'rtf', 'jira', 'text'];
+const VALID_FORMATS: ReadonlyArray<Format> = ['html', 'markdown', 'rtf', 'csv', 'json', 'jira', 'text'];
 
 /**
  * Type guard to validate if a string is a valid Format
