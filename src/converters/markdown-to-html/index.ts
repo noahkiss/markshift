@@ -4,8 +4,19 @@
  * @packageDocumentation
  */
 import { Marked } from 'marked';
+import type { MarkedExtension } from 'marked';
 import type { ConvertOptions, ConvertResult, Format } from '../../types/index.js';
 import type { Converter } from '../index.js';
+
+/**
+ * User-supplied customization for MarkdownToHtmlConverter (see ~/.config/markshift/config.mjs)
+ */
+export interface MarkdownToHtmlUserConfig {
+  /** Merged over the converter's default Marked options (same shape the Marked constructor takes) */
+  options?: MarkedExtension;
+  /** Passed to marked.use(), applied after the default options */
+  extensions?: MarkedExtension[];
+}
 
 /**
  * Converts Markdown to HTML using marked with GFM extensions
@@ -21,12 +32,17 @@ export class MarkdownToHtmlConverter implements Converter {
 
   private markedInstance: Marked;
 
-  constructor() {
+  constructor(userConfig?: MarkdownToHtmlUserConfig) {
     // Create a new marked instance with GFM configuration
     this.markedInstance = new Marked({
       gfm: true, // Enable GFM (tables, strikethrough, task lists)
       breaks: false, // Don't convert \n to <br>
+      ...userConfig?.options,
     });
+
+    if (userConfig?.extensions) {
+      this.markedInstance.use(...userConfig.extensions);
+    }
   }
 
   convert(input: string, _options?: ConvertOptions): ConvertResult {

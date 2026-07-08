@@ -12,6 +12,20 @@ import { addSemanticTableRule } from './rules/semantic-table.js';
 import { addConfluenceRules } from './rules/confluence.js';
 
 /**
+ * User-supplied customization for HtmlToMarkdownConverter (see ~/.config/markshift/config.mjs)
+ */
+export interface HtmlToMarkdownUserConfig {
+  /** Merged over the converter's default TurndownService options */
+  options?: Partial<TurndownService.Options>;
+  /**
+   * Called last, after all built-in rules (gfm + code-language + semantic-table +
+   * confluence). Turndown's addRule prepends, so rules added here take priority
+   * over any built-in rule for the same node.
+   */
+  setup?: (turndown: TurndownService) => void;
+}
+
+/**
  * Converts HTML to Markdown using turndown with GFM plugin
  *
  * Features:
@@ -27,7 +41,7 @@ export class HtmlToMarkdownConverter implements Converter {
 
   private turndown: TurndownService;
 
-  constructor() {
+  constructor(userConfig?: HtmlToMarkdownUserConfig) {
     this.turndown = new TurndownService({
       headingStyle: 'atx', // # style headings
       codeBlockStyle: 'fenced', // ``` blocks
@@ -36,6 +50,7 @@ export class HtmlToMarkdownConverter implements Converter {
       strongDelimiter: '**', // **bold**
       bulletListMarker: '-', // - list items
       linkStyle: 'inlined', // [text](url)
+      ...userConfig?.options,
     });
 
     // Add GFM support (tables, strikethrough, task lists)
@@ -50,6 +65,10 @@ export class HtmlToMarkdownConverter implements Converter {
 
     // Add Confluence-specific rules (rendered HTML and storage format)
     addConfluenceRules(this.turndown);
+
+    // User setup runs last so their addRule calls (which prepend) win over
+    // every built-in rule above
+    userConfig?.setup?.(this.turndown);
   }
 
   convert(input: string, _options?: ConvertOptions): ConvertResult {

@@ -19,13 +19,16 @@ function csvEscape(field: string): string {
 
 /**
  * Parse a markdown table row into cells
+ *
+ * Splits on unescaped pipes only, since csv-to-markdown escapes literal `|`
+ * characters in cell values as `\|` to avoid corrupting the table structure.
  */
 function parseTableRow(line: string): string[] {
   return line
     .replace(/^\|/, '')
     .replace(/\|$/, '')
-    .split('|')
-    .map((cell) => cell.trim());
+    .split(/(?<!\\)\|/)
+    .map((cell) => cell.trim().replace(/\\\|/g, '|'));
 }
 
 /**

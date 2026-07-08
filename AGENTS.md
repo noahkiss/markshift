@@ -51,7 +51,7 @@ src/
 1. Create a new directory under `src/converters/`
 2. Implement the Converter interface from `src/types/`
 3. Add tests with example inputs/outputs
-4. Register in `src/converters/index.ts`
+4. Register in `createDefaultRegistry()` (`src/converters/index.ts`) -- built-in pairs go here; user config's `converters:` entries register as overrides on top via `{ override: true }`
 5. Add CLI command in `src/cli/commands/`
 
 ### Conversion Quality Standards

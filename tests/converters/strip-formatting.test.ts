@@ -59,4 +59,14 @@ describe('StripFormattingConverter', () => {
     expect(result.content).toContain('A');
     expect(result.content).toContain('B');
   });
+
+  it('decodes astral-plane decimal numeric entities', () => {
+    const result = converter.convert('<p>grin: &#128512;</p>');
+    expect(result.content).toContain('😀');
+  });
+
+  it('decodes astral-plane hex numeric entities', () => {
+    const result = converter.convert('<p>grin: &#x1F600;</p>');
+    expect(result.content).toContain('😀');
+  });
 });

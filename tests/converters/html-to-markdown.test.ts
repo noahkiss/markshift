@@ -297,4 +297,31 @@ describe('HtmlToMarkdownConverter', () => {
       expect(retrieved).toBe(converter);
     });
   });
+
+  describe('user config hooks', () => {
+    it('merges options over the defaults (custom bulletListMarker)', () => {
+      const custom = new HtmlToMarkdownConverter({ options: { bulletListMarker: '*' } });
+      const result = custom.convert('<ul><li>one</li><li>two</li></ul>');
+      expect(result.content).toMatch(/^\*\s+one/m);
+      expect(result.content).toMatch(/^\*\s+two/m);
+      expect(result.content).not.toMatch(/^-\s+one/m);
+    });
+
+    it('runs setup() last, so a user rule overrides a built-in rule', () => {
+      // Built-in behavior: <strong> becomes **bold**
+      const before = converter.convert('<strong>bold</strong>');
+      expect(before.content.trim()).toBe('**bold**');
+
+      const custom = new HtmlToMarkdownConverter({
+        setup(turndown) {
+          turndown.addRule('shout-strong', {
+            filter: 'strong',
+            replacement: (content) => `!!${content}!!`,
+          });
+        },
+      });
+      const result = custom.convert('<strong>bold</strong>');
+      expect(result.content.trim()).toBe('!!bold!!');
+    });
+  });
 });

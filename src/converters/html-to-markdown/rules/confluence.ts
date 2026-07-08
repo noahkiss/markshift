@@ -21,6 +21,35 @@ interface DomNode {
   querySelectorAll?: (selector: string) => ArrayLike<DomNode>;
 }
 
+const emoticonMap: Record<string, string> = {
+  smile: ':)',
+  sad: ':(',
+  cheeky: ':P',
+  laugh: ':D',
+  wink: ';)',
+  thumbs_up: '(y)',
+  thumbs_down: '(n)',
+  tick: '[x]',
+  cross: '[ ]',
+  warning: '(!)',
+  information: '(i)',
+  question: '(?)',
+  'yellow-star': '(*)',
+  'red-star': '(*r)',
+  'green-star': '(*g)',
+  'blue-star': '(*b)',
+};
+
+function emoticonReplacement(node: DomNode): string {
+  const name = node.getAttribute?.('ac:name') || '';
+  return emoticonMap[name] || `(${name})`;
+}
+
+function imageReplacement(node: DomNode): string {
+  const alt = node.getAttribute?.('ac:alt') || 'image';
+  return `![${alt}]`;
+}
+
 /**
  * Add all Confluence-specific rules to a Turndown instance
  */
@@ -98,8 +127,32 @@ export function addConfluenceRules(turndown: TurndownService): void {
   // --- Confluence Storage Format (API/export XML) ---
   // These handle ac: namespace elements that appear in Confluence's XHTML storage format
 
-  // Preprocess: strip ac: and ri: namespace prefixes so Turndown can parse them
-  // This is done as a rule that matches the custom element names
+  // NOTE: Turndown's addRule unshifts each rule onto the front of its internal
+  // list, so the LAST rule added is the FIRST one checked (last-added wins).
+  // The generic ac:/ri: catch-alls below must therefore be added FIRST, so that
+  // all the specific macro rules added afterward take precedence over them.
+
+  // Catch-all for remaining ac: elements — extract text content
+  turndown.addRule('confluenceGenericAc', {
+    filter: (node) => node.nodeName.toLowerCase().startsWith('ac:'),
+    replacement: (content) => content,
+  });
+
+  // Catch-all for ri: elements — extract text content
+  turndown.addRule('confluenceGenericRi', {
+    filter: (node) => node.nodeName.toLowerCase().startsWith('ri:'),
+    replacement: (content) => content,
+  });
+
+  // ac:parameter carries macro config (language, title, etc.) that the specific
+  // macro rules below read directly off the DOM node via querySelectorAll —
+  // they're unaffected by this replacement. Drop it here so parameter text
+  // doesn't otherwise leak into the rendered content of its parent macro.
+  turndown.addRule('confluenceParameter', {
+    filter: (node) => node.nodeName.toLowerCase() === 'ac:parameter',
+    replacement: () => '',
+  });
+
   turndown.addRule('confluenceMacroCodeBlock', {
     filter: (node) => {
       const name = node.nodeName.toLowerCase();
@@ -121,8 +174,11 @@ export function addConfluenceRules(turndown: TurndownService): void {
           }
         }
       }
-      // Get code body
-      const body = el.textContent || '';
+      // Get code body from ac:plain-text-body if present, else fall back to
+      // the macro's full text content
+      const bodyEl = el.querySelectorAll?.('ac\\:plain-text-body, plain-text-body');
+      const body =
+        bodyEl && bodyEl.length > 0 ? (bodyEl[0] as DomNode).textContent || '' : el.textContent || '';
       return `\n\n\`\`\`${lang}\n${body.trim()}\n\`\`\`\n\n`;
     },
   });
@@ -191,38 +247,13 @@ export function addConfluenceRules(turndown: TurndownService): void {
   // ac:image → extract as image reference
   turndown.addRule('confluenceImage', {
     filter: (node) => node.nodeName.toLowerCase() === 'ac:image',
-    replacement: (_content, node) => {
-      const el = node as DomNode;
-      const alt = el.getAttribute?.('ac:alt') || 'image';
-      return `![${alt}]`;
-    },
+    replacement: (_content, node) => imageReplacement(node as DomNode),
   });
 
   // ac:emoticon → convert to text
   turndown.addRule('confluenceEmoticon', {
     filter: (node) => node.nodeName.toLowerCase() === 'ac:emoticon',
-    replacement: (_content, node) => {
-      const name = (node as DomNode).getAttribute?.('ac:name') || '';
-      const emojiMap: Record<string, string> = {
-        smile: ':)',
-        sad: ':(',
-        cheeky: ':P',
-        laugh: ':D',
-        wink: ';)',
-        thumbs_up: '(y)',
-        thumbs_down: '(n)',
-        tick: '[x]',
-        cross: '[ ]',
-        warning: '(!)',
-        information: '(i)',
-        question: '(?)',
-        'yellow-star': '(*)',
-        'red-star': '(*r)',
-        'green-star': '(*g)',
-        'blue-star': '(*b)',
-      };
-      return emojiMap[name] || `(${name})`;
-    },
+    replacement: (_content, node) => emoticonReplacement(node as DomNode),
   });
 
   // ac:task-list / ac:task → markdown task list
@@ -245,15 +276,26 @@ export function addConfluenceRules(turndown: TurndownService): void {
     replacement: (content) => '\n' + content,
   });
 
-  // Catch-all for remaining ac: elements — extract text content
-  turndown.addRule('confluenceGenericAc', {
-    filter: (node) => node.nodeName.toLowerCase().startsWith('ac:'),
-    replacement: (content) => content,
-  });
-
-  // Catch-all for ri: elements — extract text content
-  turndown.addRule('confluenceGenericRi', {
-    filter: (node) => node.nodeName.toLowerCase().startsWith('ri:'),
-    replacement: (content) => content,
-  });
+  // Turndown treats any element with whitespace-only textContent as "blank"
+  // and renders it via a fixed internal blankRule, which bypasses every rule
+  // registered via addRule above — including ours. ac:image and ac:emoticon
+  // carry their meaning entirely in attributes (ac:alt, ac:name) and have no
+  // text content of their own, so in practice they always hit this shortcut
+  // and would otherwise be silently dropped. There's no public option that
+  // reaches this path (blankReplacement is copied into rules.blankRule once
+  // at construction, not read live), so patch rules.blankRule directly.
+  const rules = turndown.rules as unknown as {
+    blankRule: { replacement: (content: string, node: DomNode) => string };
+  };
+  const defaultBlankReplacement = rules.blankRule.replacement;
+  rules.blankRule.replacement = (content, node) => {
+    switch (node.nodeName.toLowerCase()) {
+      case 'ac:image':
+        return imageReplacement(node);
+      case 'ac:emoticon':
+        return emoticonReplacement(node);
+      default:
+        return defaultBlankReplacement(content, node);
+    }
+  };
 }

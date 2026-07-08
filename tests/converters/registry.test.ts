@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { ConverterRegistry } from '../../src/converters/index.js';
+import { ConverterRegistry, createDefaultRegistry } from '../../src/converters/index.js';
 import type { Converter } from '../../src/converters/index.js';
 import type { ConvertResult } from '../../src/types/index.js';
 
@@ -96,5 +96,77 @@ describe('ConverterRegistry', () => {
     expect(registry.has('html', 'markdown')).toBe(true);
     expect(registry.has('markdown', 'html')).toBe(true);
     expect(registry.has('rtf', 'markdown')).toBe(true);
+  });
+
+  describe('register with { override: true }', () => {
+    it('replaces an existing registration instead of throwing', () => {
+      const original = createMockConverter('markdown', 'html');
+      const replacement = createMockConverter('markdown', 'html');
+      registry.register(original);
+
+      expect(() => registry.register(replacement, { override: true })).not.toThrow();
+      expect(registry.get('markdown', 'html')).toBe(replacement);
+    });
+
+    it('marks the pair as a user override, retrievable via getOverride', () => {
+      const converter = createMockConverter('markdown', 'html');
+      registry.register(converter, { override: true });
+
+      expect(registry.getOverride('markdown', 'html')).toBe(converter);
+    });
+
+    it('getOverride returns undefined for a plain (non-override) registration', () => {
+      const converter = createMockConverter('markdown', 'html');
+      registry.register(converter);
+
+      expect(registry.getOverride('markdown', 'html')).toBeUndefined();
+    });
+  });
+});
+
+describe('createDefaultRegistry', () => {
+  it('registers all built-in format pairs with none marked as overrides', () => {
+    const reg = createDefaultRegistry();
+
+    for (const [source, target] of [
+      ['html', 'markdown'],
+      ['markdown', 'html'],
+      ['rtf', 'html'],
+      ['csv', 'markdown'],
+      ['markdown', 'csv'],
+      ['json', 'markdown'],
+    ] as const) {
+      expect(reg.has(source, target)).toBe(true);
+      expect(reg.getOverride(source, target)).toBeUndefined();
+    }
+  });
+
+  it('applies htmlToMarkdown/markdownToHtml user config to the built-in converters', () => {
+    const reg = createDefaultRegistry({
+      htmlToMarkdown: { options: { bulletListMarker: '*' } },
+      markdownToHtml: { options: { breaks: true } },
+    });
+
+    const htmlToMd = reg.get('html', 'markdown')!;
+    expect(htmlToMd.convert('<ul><li>x</li></ul>').content).toMatch(/^\*\s+x/m);
+
+    const mdToHtml = reg.get('markdown', 'html')!;
+    expect((mdToHtml.convert('a\nb') as ConvertResult).content).toContain('<br>');
+  });
+
+  it('registers user converters as overrides, replacing a built-in pair', () => {
+    const customMarkdownToHtml = createMockConverter('markdown', 'html');
+    const reg = createDefaultRegistry({ converters: [customMarkdownToHtml] });
+
+    expect(reg.get('markdown', 'html')).toBe(customMarkdownToHtml);
+    expect(reg.getOverride('markdown', 'html')).toBe(customMarkdownToHtml);
+  });
+
+  it('registers a wholly custom pair not covered by any built-in', () => {
+    const jiraConverter = createMockConverter('jira', 'html');
+    const reg = createDefaultRegistry({ converters: [jiraConverter] });
+
+    expect(reg.get('jira', 'html')).toBe(jiraConverter);
+    expect(reg.getOverride('jira', 'html')).toBe(jiraConverter);
   });
 });

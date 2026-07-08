@@ -7,20 +7,18 @@ import { Command } from '@commander-js/extra-typings';
 import { detectFormat } from '../utils/format-detect.js';
 import { readInput, writeOutput } from '../utils/io.js';
 import { createLogger } from '../utils/logger.js';
-import { HtmlToMarkdownConverter } from '../../converters/html-to-markdown/index.js';
 import { extractContent } from '../../converters/html-to-markdown/extractors/content.js';
-import { MarkdownToHtmlConverter } from '../../converters/markdown-to-html/index.js';
-import { RtfToHtmlConverter } from '../../converters/rtf-to-html/index.js';
-import { CsvToMarkdownConverter } from '../../converters/csv-to-markdown/index.js';
-import { MarkdownToCsvConverter } from '../../converters/markdown-to-csv/index.js';
-import { JsonToMarkdownConverter } from '../../converters/json-to-markdown/index.js';
 import { StripFormattingConverter } from '../../converters/strip-formatting/index.js';
 import { wrapCodeBlock } from '../../converters/code-block/index.js';
+import { createDefaultRegistry } from '../../converters/index.js';
+import type { ConverterRegistry } from '../../converters/index.js';
+import type { Format } from '../../types/index.js';
+import { getUserConfig } from '../config-state.js';
 import type { GlobalOptions } from '../types.js';
 import { toJsonOutput } from '../types.js';
 
-type TargetFormat = 'md' | 'html' | 'csv' | 'text' | 'code';
-type SourceFormat = 'html' | 'markdown' | 'rtf' | 'csv' | 'json';
+export type TargetFormat = 'md' | 'html' | 'csv' | 'text' | 'code';
+export type SourceFormat = 'html' | 'markdown' | 'rtf' | 'csv' | 'json';
 const VALID_TARGETS: TargetFormat[] = ['md', 'html', 'csv', 'text', 'code'];
 
 /**
@@ -140,7 +138,8 @@ export const convertCommand = new Command('convert')
       logger.verbose(`Target format: ${targetFormat}`);
 
       // Convert
-      const result = await convert(content, sourceFormat, targetFormat, globalOpts, logger);
+      const registry = createDefaultRegistry(getUserConfig());
+      const result = await convert(content, sourceFormat, targetFormat, globalOpts, logger, registry);
 
       const processingTimeMs = performance.now() - startTime;
       logger.verbose(`Converted in ${processingTimeMs.toFixed(2)}ms`);
@@ -158,7 +157,8 @@ export const convertCommand = new Command('convert')
           processingTimeMs,
           inputLength
         );
-        process.stdout.write(JSON.stringify(jsonOutput, null, 2) + '\n');
+        const jsonString = JSON.stringify(jsonOutput, null, 2) + '\n';
+        await writeOutput(options.output, jsonString, { copy: globalOpts.copy, outputFormat: 'text' });
       } else {
         const outputFormat = targetFormat === 'html' ? ('html' as const) : ('text' as const);
         await writeOutput(options.output, result, { copy: globalOpts.copy, outputFormat });
@@ -176,12 +176,13 @@ export const convertCommand = new Command('convert')
     }
   });
 
-async function convert(
+export async function convert(
   content: string,
   source: SourceFormat,
   target: TargetFormat,
   opts: GlobalOptions,
-  logger: ReturnType<typeof createLogger>
+  logger: ReturnType<typeof createLogger>,
+  registry: ConverterRegistry = createDefaultRegistry()
 ): Promise<string> {
   // Strip formatting — works on any input
   if (target === 'text') {
@@ -193,46 +194,59 @@ async function convert(
     return wrapCodeBlock(content);
   }
 
-  // Source-specific pipelines
+  // If the user registered a converter for this exact pair, use it directly
+  // instead of pivoting through markdown.
+  const targetFormat: Format = target === 'md' ? 'markdown' : target;
+  const override = registry.getOverride(source, targetFormat);
+  if (override) {
+    return (await override.convert(content)).content;
+  }
+
+  // Step 1: pivot the source down to markdown
+  let markdown: string;
   switch (source) {
     case 'rtf': {
       logger.verbose('Converting via RTF->HTML->Markdown pipeline');
-      const rtfConverter = new RtfToHtmlConverter();
+      const rtfConverter = registry.get('rtf', 'html')!;
       const htmlResult = await rtfConverter.convert(content);
       let html = htmlResult.content;
       if (opts.extractContent) {
         const extracted = extractContent(html);
         if (extracted) html = extracted.content;
       }
-      return new HtmlToMarkdownConverter().convert(html).content;
+      markdown = (await registry.get('html', 'markdown')!.convert(html)).content;
+      break;
     }
 
     case 'csv':
-      return new CsvToMarkdownConverter().convert(content).content;
+      markdown = (await registry.get('csv', 'markdown')!.convert(content)).content;
+      break;
 
     case 'json':
-      return new JsonToMarkdownConverter().convert(content).content;
+      markdown = (await registry.get('json', 'markdown')!.convert(content)).content;
+      break;
 
-    case 'html': {
-      if (target === 'csv') {
-        // HTML -> MD -> CSV (extract table)
-        const md = new HtmlToMarkdownConverter().convert(content).content;
-        return new MarkdownToCsvConverter().convert(md).content;
-      }
+    case 'html':
+      // Also covers html -> html: round-tripping through markdown cleans up
+      // messy HTML (e.g. from Excel), so the pivot gives that for free.
       if (target === 'html') {
-        // Round-trip to clean messy HTML (e.g. Excel)
         logger.verbose('Round-tripping HTML through Markdown for cleanup');
-        const md = new HtmlToMarkdownConverter().convert(content).content;
-        return new MarkdownToHtmlConverter().convert(md).content;
       }
-      return new HtmlToMarkdownConverter().convert(content).content;
-    }
+      markdown = (await registry.get('html', 'markdown')!.convert(content)).content;
+      break;
 
-    case 'markdown': {
-      if (target === 'csv') {
-        return new MarkdownToCsvConverter().convert(content).content;
-      }
-      return new MarkdownToHtmlConverter().convert(content).content;
-    }
+    case 'markdown':
+      markdown = content;
+      break;
+  }
+
+  // Step 2: render markdown to the requested target
+  switch (target) {
+    case 'md':
+      return markdown;
+    case 'html':
+      return (await registry.get('markdown', 'html')!.convert(markdown)).content;
+    case 'csv':
+      return (await registry.get('markdown', 'csv')!.convert(markdown)).content;
   }
 }

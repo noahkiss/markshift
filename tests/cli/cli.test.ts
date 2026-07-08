@@ -3,6 +3,7 @@
  *
  * @packageDocumentation
  */
+import { readFileSync } from 'node:fs';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { Command, CommanderError } from '@commander-js/extra-typings';
 import { VERSION } from '../../src/index.js';
@@ -11,6 +12,15 @@ import { MarkdownToHtmlConverter } from '../../src/converters/markdown-to-html/i
 import { htmlToMdCommand } from '../../src/cli/commands/html-to-md.js';
 import { mdToHtmlCommand } from '../../src/cli/commands/md-to-html.js';
 import { createLogger } from '../../src/cli/utils/logger.js';
+
+describe('VERSION constant', () => {
+  it('matches the version in package.json', () => {
+    const packageJson = JSON.parse(
+      readFileSync(new URL('../../package.json', import.meta.url), 'utf-8')
+    );
+    expect(VERSION).toBe(packageJson.version);
+  });
+});
 
 describe('CLI', () => {
   let output: string[];

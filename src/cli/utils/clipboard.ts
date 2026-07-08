@@ -2,11 +2,11 @@
  * Clipboard utilities using platform commands
  *
  * macOS: pbcopy/pbpaste for text, osascript+AppKit for HTML/RTF
- * Linux: xclip for all formats
+ * Linux: xclip for all formats (copyq for HTML, when available — see writeClipboard)
  *
  * @packageDocumentation
  */
-import { execSync } from 'node:child_process';
+import { execSync, execFileSync } from 'node:child_process';
 import { writeFileSync, unlinkSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir, platform } from 'node:os';
@@ -78,6 +78,21 @@ end if
   return exec('xclip -selection clipboard -t text/rtf -o 2>/dev/null');
 }
 
+/** Check whether the copyq CLI is available on PATH */
+function hasCopyq(): boolean {
+  try {
+    execSync('command -v copyq', { stdio: ['ignore', 'ignore', 'ignore'] });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** Crude HTML-to-text fallback for the plain-text clipboard target */
+function toPlainTextFallback(html: string): string {
+  return html.replace(/<[^>]+>/g, '').trim();
+}
+
 function readText(): string {
   if (isMac) {
     return exec('pbpaste 2>/dev/null');
@@ -144,6 +159,17 @@ pb's setString:htmlContent forType:"public.utf8-plain-text"
       } finally {
         try { unlinkSync(tmpFile); } catch {}
       }
+    } else if (hasCopyq()) {
+      // xclip can only serve one clipboard target per invocation (each takes
+      // selection ownership), so plain-text apps (terminals) get nothing when
+      // we set text/html alone. copyq can hold multiple formats at once.
+      execFileSync('copyq', [
+        'copy',
+        'text/html',
+        content,
+        'text/plain',
+        toPlainTextFallback(content),
+      ]);
     } else {
       execSync('xclip -selection clipboard -t text/html', { input: content, encoding: 'utf-8' });
     }

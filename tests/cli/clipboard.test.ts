@@ -6,6 +6,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 // Mock child_process and os before imports
 vi.mock('node:child_process', () => ({
   execSync: vi.fn(),
+  execFileSync: vi.fn(),
 }));
 
 vi.mock('node:os', async (importOriginal) => {
@@ -18,7 +19,7 @@ vi.mock('node:fs', async (importOriginal) => {
   return { ...actual, writeFileSync: vi.fn(), unlinkSync: vi.fn() };
 });
 
-import { execSync } from 'node:child_process';
+import { execSync, execFileSync } from 'node:child_process';
 import { platform } from 'node:os';
 import { readClipboard, writeClipboard } from '../../src/cli/utils/clipboard.js';
 
@@ -101,8 +102,13 @@ describe('writeClipboard', () => {
     });
   });
 
-  it('writes HTML via xclip with text/html type', async () => {
-    vi.mocked(execSync).mockReturnValue('');
+  it('writes HTML via xclip with text/html type when copyq is unavailable', async () => {
+    vi.mocked(execSync).mockImplementation((cmd) => {
+      if (typeof cmd === 'string' && cmd.includes('command -v copyq')) {
+        throw new Error('not found');
+      }
+      return '';
+    });
 
     await writeClipboard('<p>Hello</p>', 'html');
 
@@ -110,6 +116,25 @@ describe('writeClipboard', () => {
       input: '<p>Hello</p>',
       encoding: 'utf-8',
     });
+  });
+
+  it('writes HTML via copyq with an html + plain-text fallback when available', async () => {
+    vi.mocked(execSync).mockReturnValue(''); // 'command -v copyq' succeeds
+    vi.mocked(execFileSync).mockReturnValue('');
+
+    await writeClipboard('<p>Hello</p>', 'html');
+
+    expect(execFileSync).toHaveBeenCalledWith('copyq', [
+      'copy',
+      'text/html',
+      '<p>Hello</p>',
+      'text/plain',
+      'Hello',
+    ]);
+    expect(execSync).not.toHaveBeenCalledWith(
+      'xclip -selection clipboard -t text/html',
+      expect.anything()
+    );
   });
 
   it('writes text when format is explicitly text', async () => {

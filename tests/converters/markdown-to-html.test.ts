@@ -349,4 +349,32 @@ describe('MarkdownToHtmlConverter', () => {
       expect(retrieved).toBe(converter);
     });
   });
+
+  describe('user config hooks', () => {
+    it('merges options over the defaults (breaks: true renders <br>)', () => {
+      const withoutBreaks = converter.convert('line one\nline two');
+      expect(withoutBreaks.content).not.toContain('<br>');
+
+      const custom = new MarkdownToHtmlConverter({ options: { breaks: true } });
+      const result = custom.convert('line one\nline two');
+      expect(result.content).toContain('<br>');
+    });
+
+    it('applies extensions passed through to marked.use()', () => {
+      const custom = new MarkdownToHtmlConverter({
+        extensions: [
+          {
+            renderer: {
+              strong({ tokens }) {
+                return `<b>${this.parser.parseInline(tokens)}</b>`;
+              },
+            },
+          },
+        ],
+      });
+      const result = custom.convert('**bold**');
+      expect(result.content).toContain('<b>bold</b>');
+      expect(result.content).not.toContain('<strong>');
+    });
+  });
 });

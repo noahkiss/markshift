@@ -109,6 +109,8 @@ markshift convert --paste --copy
 
 When reading from the clipboard with `--paste`, markshift checks for content in this order: HTML > RTF > plain text. This means copying rich text from Word, Notes, or a browser gives you the best conversion automatically.
 
+On Linux, `--copy` with HTML output uses [copyq](https://github.com/hluk/CopyQ) when installed to set both the HTML and plain-text clipboard targets, so terminal/plain-text apps still get a paste. Without copyq it falls back to `xclip`, which can only serve one target per invocation and so sets HTML only.
+
 ## Content Extraction
 
 The `--extract-content` flag (on the `convert` command) uses Mozilla's Readability algorithm to pull the main article content from a web page, stripping navigation, ads, sidebars, and boilerplate.
@@ -152,8 +154,44 @@ echo '**hello**' | markshift convert --json
 | `-q, --quiet` | Suppress all non-essential output |
 | `-V, --verbose` | Show detailed processing information (to stderr) |
 | `-v, --version` | Display version number |
+| `--no-config` | Skip loading `~/.config/markshift/config.mjs` |
 
 All informational output (verbose, status messages) goes to stderr, keeping stdout clean for piping.
+
+## Configuration
+
+markshift will load `~/.config/markshift/config.mjs` (if present) to customize conversion behavior without forking -- Turndown options/rules for HTML -> Markdown, Marked options/extensions for Markdown -> HTML, and whole custom format-pair converters.
+
+Resolution order:
+
+1. `$MARKSHIFT_CONFIG` -- explicit path to a config file. If set and the file is missing, markshift errors out.
+2. `$XDG_CONFIG_HOME/markshift/config.mjs`
+3. `~/.config/markshift/config.mjs`
+
+If no config file exists at either default location, markshift silently runs with defaults. Pass `--no-config` to skip loading a config file entirely for a given invocation.
+
+```js
+// ~/.config/markshift/config.mjs
+export default {
+  htmlToMarkdown: {
+    options: { bulletListMarker: '*' },        // merged over TurndownService defaults
+    setup(turndown) { turndown.addRule(...) }, // full access; called AFTER built-in rules
+  },
+  markdownToHtml: {
+    options: { breaks: true },                 // merged over Marked defaults
+    extensions: [ /* passed to marked.use() */ ],
+  },
+  converters: [
+    { sourceFormat: 'markdown', targetFormat: 'html', convert(input, options) { return { content: '...' }; } },
+  ],
+};
+```
+
+Notes:
+
+- `htmlToMarkdown.setup()` runs *after* all built-in rules (GFM, code-language, semantic-table, Confluence). Turndown's `addRule` prepends to its rule list, so the last rule added wins -- calling your `setup()` last means your rules take priority over any built-in rule for the same node.
+- `converters` entries are registered as overrides: if you register a converter for a format pair that already has a built-in (e.g. `markdown -> html`), yours replaces it. Registering a pair with no built-in (e.g. `jira -> html`) adds it as a new conversion path.
+- Config files are plain ESM (`.mjs`), loaded via dynamic `import()`, so they can use any installed npm package or `node:` built-in.
 
 ## Supported Conversions
 

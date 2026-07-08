@@ -7,6 +7,7 @@ import { Command } from '@commander-js/extra-typings';
 import { HtmlToMarkdownConverter } from '../../converters/html-to-markdown/index.js';
 import { createLogger } from '../utils/logger.js';
 import { readInput, writeOutput } from '../utils/io.js';
+import { getUserConfig } from '../config-state.js';
 import type { GlobalOptions } from '../types.js';
 import { toJsonOutput } from '../types.js';
 
@@ -37,7 +38,7 @@ export const htmlToMdCommand = new Command('html-to-md')
       const inputLength = html.length;
       logger.verbose(`Read ${inputLength} characters of input`);
 
-      const converter = new HtmlToMarkdownConverter();
+      const converter = new HtmlToMarkdownConverter(getUserConfig()?.htmlToMarkdown);
       const result = converter.convert(html);
 
       const processingTimeMs = performance.now() - startTime;
@@ -52,7 +53,8 @@ export const htmlToMdCommand = new Command('html-to-md')
           processingTimeMs,
           inputLength
         );
-        process.stdout.write(JSON.stringify(jsonOutput, null, 2) + '\n');
+        const jsonString = JSON.stringify(jsonOutput, null, 2) + '\n';
+        await writeOutput(options.output, jsonString, { copy: globalOpts.copy, outputFormat: 'text' });
       } else {
         await writeOutput(options.output, result.content, { copy: globalOpts.copy });
         if (options.output) {

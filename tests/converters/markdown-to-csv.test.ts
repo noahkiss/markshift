@@ -3,6 +3,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import { MarkdownToCsvConverter } from '../../src/converters/markdown-to-csv/index.js';
+import { CsvToMarkdownConverter } from '../../src/converters/csv-to-markdown/index.js';
 
 describe('MarkdownToCsvConverter', () => {
   const converter = new MarkdownToCsvConverter();
@@ -69,5 +70,16 @@ describe('MarkdownToCsvConverter', () => {
     const result = converter.convert(md);
 
     expect(result.content).toBe('A,B\n');
+  });
+
+  it('round-trips a pipe-containing cell through CSV -> markdown -> CSV', () => {
+    const csv = 'name,cmd\nfoo,"a|b"\n';
+    const md = new CsvToMarkdownConverter().convert(csv).content;
+    const result = converter.convert(md);
+
+    // Quoting is unnecessary once round-tripped (no comma/quote/newline left
+    // in the cell), but the data itself — still two fields, pipe intact —
+    // must be preserved rather than split into a corrupted third field.
+    expect(result.content).toBe('name,cmd\nfoo,a|b\n');
   });
 });
