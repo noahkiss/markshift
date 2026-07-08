@@ -6,13 +6,19 @@
 import * as esbuild from 'esbuild';
 import { writeFileSync, readFileSync, chmodSync } from 'node:fs';
 
-const outfile = process.argv[2] || 'dist/markshift';
+// Default outfile uses a .cjs extension: the bundle is CommonJS, and the
+// repo's package.json has "type": "module" — an extensionless file inside the
+// repo would be treated as ESM by Node and fail with "require is not defined".
+// Custom outfiles (e.g. ~/bin/markshift) can stay extensionless: outside the
+// repo there's no package.json to force ESM, and Node's syntax detection
+// resolves them as CommonJS.
+const outfile = process.argv[2] || 'dist/markshift.cjs';
 
 await esbuild.build({
   entryPoints: ['src/cli/index.ts'],
   bundle: true,
   platform: 'node',
-  target: 'node20',
+  target: 'node24',
   format: 'cjs',
   outfile,
   // Don't add banner — we'll prepend shebang ourselves to avoid duplication

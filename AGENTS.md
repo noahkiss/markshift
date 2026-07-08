@@ -27,7 +27,7 @@ src/
 
 ## Technology Stack
 - **Language**: TypeScript (ESM)
-- **Runtime**: Node.js >= 20
+- **Runtime**: Node.js >= 24
 - **CLI**: Commander.js + @commander-js/extra-typings
 - **HTML -> MD**: Turndown + turndown-plugin-gfm
 - **MD -> HTML**: Marked

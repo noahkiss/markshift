@@ -17,7 +17,7 @@ npm install && npm run build
 npm link  # makes `markshift` available globally
 ```
 
-Requires Node.js 20+.
+Requires Node.js 24+.
 
 ## Quick Start
 
@@ -245,7 +245,7 @@ node build-bundle.mjs ~/bin/markshift
 npm run build:install  # builds to ~/bin/markshift
 ```
 
-The bundle is ~1.9MB and works anywhere with Node.js 20+.
+The bundle is ~1.9MB and works anywhere with Node.js 24+.
 
 ## Web UI
 
