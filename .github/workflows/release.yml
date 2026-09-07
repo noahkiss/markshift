@@ -116,7 +116,9 @@ jobs:
           set -euo pipefail
           npm pack
           ls -l "markshift-${VERSION}.tgz"
-          tar tzf "markshift-${VERSION}.tgz" | grep -qx 'package/dist/cli/index.js'
+          # Not `grep -q`: it exits on the first match, tar takes SIGPIPE, and
+          # pipefail turns a good tarball into a failed step.
+          tar tzf "markshift-${VERSION}.tgz" | grep -x 'package/dist/cli/index.js' >/dev/null
 
       - name: Attach to the release
         env:
