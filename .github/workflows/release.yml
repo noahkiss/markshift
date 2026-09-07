@@ -1,0 +1,155 @@
+name: Release
+
+# Release pipeline. A pushed `v*` tag runs the CI gate, packs the npm tarball,
+# attaches it to the tag's GitHub Release, then bumps the Homebrew formula
+# (`noahkiss/tap/markshift`) through the tap's own `bump.yml`, which downloads
+# the tarball, rewrites the formula, proves it with a real `brew install` on
+# macOS and Linux, and commits. Nothing is transcribed by hand.
+#
+# To cut a release:
+#
+#   npm version minor            # bumps package.json, commits, tags vX.Y.Z
+#   git push --follow-tags
+#
+# To re-run the pipeline for a tag that already exists (a failed leg, a tap
+# bump that never landed):
+#
+#   gh workflow run release.yml -R noahkiss/markshift -f tag=vX.Y.Z
+#
+# A re-run never replaces a tarball that is already attached: the formula's
+# sha256 pins what was published, and a rebuilt tarball would not match it.
+#
+# The tap hop needs a PAT in HOMEBREW_TAP_TOKEN with `workflow` scope on the
+# tap. This repo's GITHUB_TOKEN is scoped to this repo and cannot dispatch
+# another one. Same token, same name, as the zellij fork uses.
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing tag to package and release, e.g. v1.2.0'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
+      version: ${{ steps.tag.outputs.version }}
+      tap_inputs: ${{ steps.tag.outputs.tap_inputs }}
+    steps:
+      - name: Resolve the tag
+        id: tag
+        env:
+          INPUT_TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          if [ "$GITHUB_EVENT_NAME" = 'workflow_dispatch' ]; then
+            tag="$INPUT_TAG"
+          else
+            tag="${GITHUB_REF#refs/tags/}"
+          fi
+          [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+([-.][0-9A-Za-z.]+)?$ ]] \
+            || { echo "::error::not a release tag: ${tag}"; exit 1; }
+          echo "tag=${tag}" >> "$GITHUB_OUTPUT"
+          echo "version=${tag#v}" >> "$GITHUB_OUTPUT"
+          # The tap's bump.yml inputs, built here so the dispatch job below is a
+          # plain `uses:` with no quoting to get wrong.
+          echo "tap_inputs=$(jq -cn --arg tag "$tag" '{formula: "markshift", tag: $tag}')" >> "$GITHUB_OUTPUT"
+
+  # On a tag push this gates the tagged commit. On a dispatch it gates the ref
+  # the workflow was dispatched on, normally main, since the shared workflow
+  # checks out the triggering ref; the tag itself was gated when first pushed.
+  ci:
+    needs: resolve
+    permissions:
+      contents: read
+    uses: noahkiss/workflows/.github/workflows/node-ci.yml@main
+    with:
+      scripts: |
+        typecheck
+        test
+
+  package:
+    needs: [resolve, ci]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.resolve.outputs.tag }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      - run: npm ci
+
+      # The tag has to be a release OF the version the manifest says. A tag cut
+      # before `npm version` ran would otherwise publish a tarball whose own
+      # metadata contradicts its file name.
+      - name: Check the manifest version
+        env:
+          VERSION: ${{ needs.resolve.outputs.version }}
+        run: |
+          set -euo pipefail
+          manifest="$(node -p "require('./package.json').version")"
+          [ "$manifest" = "$VERSION" ] \
+            || { echo "::error::package.json says ${manifest}, tag says ${VERSION}"; exit 1; }
+
+      # `dist/` is what `files` in package.json ships: the compiled CLI the
+      # formula symlinks, plus the standalone bundle for anyone who wants a
+      # single file.
+      - run: npm run build
+      - run: npm run build:bundle
+
+      - name: Pack
+        env:
+          VERSION: ${{ needs.resolve.outputs.version }}
+        run: |
+          set -euo pipefail
+          npm pack
+          ls -l "markshift-${VERSION}.tgz"
+          tar tzf "markshift-${VERSION}.tgz" | grep -qx 'package/dist/cli/index.js'
+
+      - name: Attach to the release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ needs.resolve.outputs.tag }}
+          VERSION: ${{ needs.resolve.outputs.version }}
+        run: |
+          set -euo pipefail
+          asset="markshift-${VERSION}.tgz"
+          gh release view "$TAG" >/dev/null 2>&1 \
+            || gh release create "$TAG" --title "$TAG" --generate-notes
+          # Never clobber. The formula pins the sha of whatever was attached
+          # first; a rebuilt tarball is not byte-identical and would break
+          # every install of this version.
+          if gh release view "$TAG" --json assets --jq '.assets[].name' | grep -qx "$asset"; then
+            echo "::notice::${asset} is already attached to ${TAG}; keeping the published one"
+            exit 0
+          fi
+          gh release upload "$TAG" "$asset"
+
+  # Fire the tap's bump and fail unless it lands. A dispatch that is merely
+  # accepted proves nothing: a bump that fails its own `brew install` leaves
+  # the formula on the previous version and `brew upgrade` quietly does
+  # nothing. The tap installs on two runners before it commits, so this takes
+  # minutes, not seconds.
+  bump-tap:
+    needs: [resolve, package]
+    uses: noahkiss/workflows/.github/workflows/dispatch-and-wait.yml@main
+    with:
+      repo: noahkiss/homebrew-tap
+      workflow: bump.yml
+      inputs_json: ${{ needs.resolve.outputs.tap_inputs }}
+      timeout_minutes: 45
+    secrets:
+      token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
