@@ -3,6 +3,14 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+    # Only what `vite build` reads. docs/ is the build output, not an input.
+    paths:
+      - 'src/**'
+      - 'vite.config.ts'
+      - 'tsconfig.json'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/deploy-pages.yml'
   workflow_dispatch:
 
 permissions:
