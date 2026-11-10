@@ -15,7 +15,7 @@ Updated package.json with all fields required for npm publish:
 - `homepage`: GitHub readme URL
 
 ### Homebrew formula
-Created `/home/flight/develop/homebrew-tap/Formula/markshift.rb`:
+Created `/home/<user>/develop/homebrew-tap/Formula/markshift.rb`:
 - Uses npm registry tarball as source
 - Depends on `node` formula
 - Uses `std_npm_args` for proper npm cache handling
@@ -54,4 +54,4 @@ Total tests: 209 passing (unchanged from Phase 8).
 ## Files Changed
 
 - `package.json` - Added npm publish metadata
-- `/home/flight/develop/homebrew-tap/Formula/markshift.rb` - New Homebrew formula
+- `/home/<user>/develop/homebrew-tap/Formula/markshift.rb` - New Homebrew formula

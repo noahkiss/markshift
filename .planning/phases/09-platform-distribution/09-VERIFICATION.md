@@ -26,7 +26,7 @@ human_verification:
 | # | Truth | Status | Evidence |
 |---|-------|--------|----------|
 | 1 | Package is ready for npm publish with all required metadata | VERIFIED | package.json contains repository, files, engines, bugs, homepage |
-| 2 | Homebrew formula exists in user's tap | VERIFIED | /home/flight/develop/homebrew-tap/Formula/markshift.rb exists (42 lines) |
+| 2 | Homebrew formula exists in user's tap | VERIFIED | /home/<user>/develop/homebrew-tap/Formula/markshift.rb exists (42 lines) |
 | 3 | User can install via brew install noahkiss/tap/markshift | NEEDS HUMAN | Formula exists but has placeholder SHA256; requires npm publish first |
 | 4 | Installed CLI runs correctly | PARTIALLY VERIFIED | CLI runs on Linux via tsx; Homebrew install needs human testing |
 
@@ -37,7 +37,7 @@ human_verification:
 | Artifact | Expected | Status | Details |
 |----------|----------|--------|---------|
 | `package.json` | npm publish metadata | VERIFIED | 63 lines, has repository (line 11), files (line 19), engines (line 23), bugs (line 15), homepage (line 18) |
-| `/home/flight/develop/homebrew-tap/Formula/markshift.rb` | Homebrew formula | VERIFIED | 42 lines, class Markshift < Formula, proper structure |
+| `/home/<user>/develop/homebrew-tap/Formula/markshift.rb` | Homebrew formula | VERIFIED | 42 lines, class Markshift < Formula, proper structure |
 
 ### Key Link Verification
 

@@ -21,7 +21,7 @@ name: Release
 #
 # The tap hop needs a PAT in HOMEBREW_TAP_TOKEN with `workflow` scope on the
 # tap. This repo's GITHUB_TOKEN is scoped to this repo and cannot dispatch
-# another one. Same token, same name, as the zellij fork uses.
+# another one.
 
 on:
   push:
